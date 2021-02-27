@@ -2,10 +2,14 @@
   <span
     class="vpd-main"
     :data-type="type"
-    :data-placement="popoverPlace"
-    :data-locale="localeData.name"
-    :data-locale-dir="localeData.config.dir"
+    :data-placement="state.popoverPlace"
+    :data-locale="state.localeData.name"
+    :data-locale-dir="state.localeData.config.dir"
     :class="{ 'vpd-is-popover': isPopover }"
+    :element="element"
+    :model-value="modelValue"
+    :initial-value="initialValue"
+    :display-format="displayFormat"
   >
     <span
       v-if="!element"
@@ -16,12 +20,12 @@
         :for="id"
         class="vpd-icon-btn"
         :style="{ 'background-color': color }"
-        @click.prevent.stop="visible = !visible"
+        @click.prevent.stop="state.visible = !state.visible"
       >
         <slot name="label">
-          <time-icon v-if="type === 'time'" width="16px" height="16px" />
-          <calendar-icon v-else width="16px" height="16px" />
-          <span v-if="label" v-text="label" />
+          <time-icon v-if="type === 'time'" width="16px" height="16px"/>
+          <calendar-icon v-else width="16px" height="16px"/>
+          <span v-if="label" v-text="label"/>
         </slot>
       </label>
       <input
@@ -33,6 +37,7 @@
         :placeholder="placeholder"
         :value="displayValue"
         :disabled="disabled"
+        :format="format"
         @focus="focus"
         @blur="setOutput"
         @keydown.enter="setOutput"
@@ -48,7 +53,7 @@
         class="vpd-clear-btn"
         @click="clearValue"
       >
-        <slot name="clear-btn" v-bind="{ vm }">x</slot>
+        <slot name="clear-btn">x</slot>
       </i>
     </span>
 
@@ -59,13 +64,13 @@
       :value="altFormatted"
     />
 
-    <transition :name="isPopover ? '' : 'vpd-fade-scale'">
+    <transition :name="isPopover.value ? '' : 'vpd-fade-scale'">
       <div
-        v-if="visible"
+        v-if="state.visible"
         ref="picker"
         :class="[
           'vpd-wrapper',
-          `vpd-dir-${localeData.config.dir}`,
+          `vpd-dir-${state.localeData.config.dir}`,
           {
             'vpd-is-range': range,
             'vpd-is-inline': inline,
@@ -82,12 +87,12 @@
             <div class="vpd-header" :style="{ 'background-color': color }">
               <div
                 v-if="['date', 'datetime', 'year-month'].indexOf(type) !== -1"
-                :class="['vpd-year-label', directionClass]"
+                :class="['vpd-year-label', state.directionClass]"
                 @click="goStep('y')"
               >
                 <transition name="slideY">
                   <span :key="selectedDate.xYear()">
-                    <slot name="header-year" v-bind="{ vm, selectedDate }">
+                    <slot name="header-year" v-bind="{ selectedDate }">
                       {{ convertToLocaleNumber(selectedDate.xYear()) }}
                     </slot>
                   </span>
@@ -95,25 +100,24 @@
               </div>
               <div
                 v-if="type !== 'year-month'"
-                :class="['vpd-date', directionClass]"
+                :class="['vpd-date', state.directionClass]"
               >
                 <transition name="slideY">
                   <span :key="formattedDate">
-                    <slot name="header-date" v-bind="{ vm, formattedDate }">
+                    <slot name="header-date">
                       {{ convertToLocaleNumber(formattedDate) }}
                     </slot>
                   </span>
                 </transition>
               </div>
               <slot
-                v-if="locales.length > 1"
+                v-if="state.locales.length > 1"
                 name="locales"
-                v-bind="{ vm, locales, setLocale }"
               >
                 <locale-change
-                  :locale-data="localeData"
-                  :core="core"
-                  :locales="locales"
+                  :locale-data="state.localeData"
+                  :core="state.core"
+                  :locales="state.locales"
                   class="vpd-locales"
                   @change="setLocale"
                 />
@@ -121,7 +125,7 @@
             </div>
             <div class="vpd-body">
               <template v-if="hasStep('d')">
-                <div :class="['vpd-controls', directionClassDate]">
+                <div :class="['vpd-controls', state.directionClassDate]">
                   <button
                     type="button"
                     class="vpd-next"
@@ -152,24 +156,20 @@
                   </button>
                   <transition name="slideX">
                     <div
-                      :key="date.xMonth()"
+                      :key="state.date.xMonth()"
                       class="vpd-month-label"
                       @click="goStep('m')"
                     >
-                      <slot name="month-name" v-bind="{ vm, date, color }">
-                        <span
-                          :style="{ 'border-color': color, color }"
-                          v-text="
-                            convertToLocaleNumber(date.xFormat('jMMMM jYYYY'))
-                          "
-                        />
+                      <slot name="month-name">
+                        <span :style="{ 'border-color': color }"
+                              v-text="convertToLocaleNumber(state.date.xFormat('jMMMM jYYYY'))" />
                       </slot>
                     </div>
                   </transition>
                 </div>
                 <div
                   class="vpd-clearfix"
-                  :class="['vpd-month', directionClassDate]"
+                  :class="['vpd-month', state.directionClassDate]"
                 >
                   <div class="vpd-clearfix vpd-week">
                     <div
@@ -177,7 +177,7 @@
                       :key="`${i}-${day}`"
                       class="vpd-weekday"
                     >
-                      <slot name="weekday" v-bind="{ vm, day }">
+                      <slot name="weekday" v-bind="{ day }">
                         {{ day }}
                       </slot>
                     </div>
@@ -185,10 +185,10 @@
                   <div
                     class="vpd-days"
                     :style="{ height: month.length * 40 + 'px' }"
-                    @mouseleave="hoveredItem = null"
+                    @mouseleave="state.hoveredItem = null"
                   >
-                    <transition name="slideX" :class="directionClassDate">
-                      <div :key="date.xMonth()">
+                    <transition name="slideX" :class="state.directionClassDate">
+                      <div :key="state.date.xMonth()">
                         <div
                           v-for="(m, mi) in monthDays"
                           :key="mi"
@@ -205,17 +205,17 @@
                                 'vpd-range-first': day.isFirst,
                                 'vpd-range-last': day.isLast,
                                 'vpd-range-between': day.isBetween,
-                                'vpd-range-hover': hoveredItem && day.isHover
+                                'vpd-range-hover': state.hoveredItem && day.isHover
                               },
-                              day.attributes.class
+                              // day.attributes.class
                             ]"
                             v-bind="day.attributes"
                             :disabled="day.disabled"
                             @click="selectDay(day)"
-                            @mouseover="hoveredItem = day.date"
+                            @mouseover="state.hoveredItem = day.date"
                           >
                             <template v-if="day.date != null">
-                              <slot name="day-item" v-bind="{ vm, day, color }">
+                              <slot name="day-item" v-bind="{ day }">
                                 <span
                                   class="vpd-day-effect"
                                   :style="{ 'background-color': color }"
@@ -234,7 +234,7 @@
                 </div>
               </template>
 
-              <div v-else style="height:250px" />
+              <div v-else style="height:250px"/>
 
               <transition name="fade">
                 <div
@@ -243,7 +243,7 @@
                   ref="year"
                   :class="[
                     'vpd-addon-list',
-                    { 'vpd-can-close': steps.length > 1 }
+                    { 'vpd-can-close': state.steps.length > 1 }
                   ]"
                 >
                   <div class="vpd-addon-list-content">
@@ -263,7 +263,7 @@
                       :disabled="year.disabled"
                       @click="selectYear(year)"
                     >
-                      <slot name="year-item" v-bind="{ vm, year, color }">
+                      <slot name="year-item" v-bind="{ year }">
                         {{ convertToLocaleNumber(year.xFormat('jYYYY')) }}
                       </slot>
                     </div>
@@ -275,10 +275,10 @@
                 <div
                   v-if="hasStep('m')"
                   v-show="currentStep === 'm'"
-                  ref="month"
+                  ref="monthEl"
                   :class="[
                     'vpd-addon-list vpd-month-list',
-                    { 'vpd-can-close': steps.length > 1 }
+                    { 'vpd-can-close': state.steps.length > 1 }
                   ]"
                 >
                   <div class="vpd-addon-list-content">
@@ -298,7 +298,7 @@
                       ]"
                       @click="selectMonth(monthItem)"
                     >
-                      <slot name="month-item" v-bind="{ vm, monthItem, color }">
+                      <slot name="month-item" v-bind="{ monthItem }">
                         {{ monthItem.xFormat('jMMMM') }}
                       </slot>
                     </div>
@@ -317,21 +317,21 @@
                   ]"
                 >
                   <div class="vpd-addon-list-content">
-                    <div :class="['vpd-time-h', classFastCounter]">
+                    <div :class="['vpd-time-h', state.classFastCounter]">
                       <btn
                         class="vpd-up-arrow-btn"
                         @update="setTime(1, 'h')"
                         @fastUpdate="fastUpdateCounter"
                       >
-                        <arrow width="20" direction="up" />
+                        <arrow width="20" direction="up"/>
                       </btn>
                       <div
                         class="vpd-counter"
-                        :class="directionClassTime"
+                        :class="state.directionClassTime"
                         @mousewheel.stop.prevent="wheelSetTime('h', $event)"
                       >
                         <div
-                          v-for="(item, i) in time.format('HH').split('')"
+                          v-for="(item, i) in state.time.format('HH').split('')"
                           :key="`h__${i}`"
                           class="vpd-counter-item"
                           v-bind="timeAttributes"
@@ -342,7 +342,7 @@
                               :style="{
                                 transition:
                                   'all ' +
-                                  timeData.transitionSpeed +
+                                  state.timeData.transitionSpeed +
                                   'ms ease-in-out'
                               }"
                               v-text="convertToLocaleNumber(item)"
@@ -355,24 +355,24 @@
                         @update="setTime(-1, 'h')"
                         @fastUpdate="fastUpdateCounter"
                       >
-                        <arrow width="20" direction="down" />
+                        <arrow width="20" direction="down"/>
                       </btn>
                     </div>
-                    <div :class="['vpd-time-m', classFastCounter]">
+                    <div :class="['vpd-time-m', state.classFastCounter]">
                       <btn
                         class="vpd-up-arrow-btn"
                         @update="setTime(jumpMinute, 'm')"
                         @fastUpdate="fastUpdateCounter"
                       >
-                        <arrow width="20" direction="up" />
+                        <arrow width="20" direction="up"/>
                       </btn>
                       <div
                         class="vpd-counter"
-                        :class="directionClassTime"
+                        :class="state.directionClassTime"
                         @mousewheel.stop.prevent="wheelSetTime('m', $event)"
                       >
                         <div
-                          v-for="(item, i) in time.format('mm').split('')"
+                          v-for="(item, i) in state.time.format('mm').split('')"
                           :key="`m__${i}`"
                           class="vpd-counter-item"
                           v-bind="timeAttributes"
@@ -383,7 +383,7 @@
                               :style="{
                                 transition:
                                   'all ' +
-                                  timeData.transitionSpeed +
+                                  state.timeData.transitionSpeed +
                                   'ms ease-in-out'
                               }"
                               v-text="convertToLocaleNumber(item)"
@@ -396,7 +396,7 @@
                         @update="setTime(-jumpMinute, 'm')"
                         @fastUpdate="fastUpdateCounter"
                       >
-                        <arrow width="20" direction="down" />
+                        <arrow width="20" direction="down"/>
                       </btn>
                     </div>
                   </div>
@@ -405,20 +405,20 @@
 
               <transition name="fade">
                 <span
-                  v-if="steps.length > 1 && currentStep !== 'd' && hasStep('d')"
+                  v-if="state.steps.length > 1 && currentStep !== 'd' && hasStep('d')"
                   class="vpd-close-addon"
                   @click="goStep('d')"
                 >
-                  <slot name="close-btn" v-bind="{ vm }">x</slot>
+                  <slot name="close-btn">x</slot>
                 </span>
               </transition>
 
-              <br v-if="autoSubmit && !hasStep('t')" />
+              <br v-if="autoSubmit && !hasStep('t')"/>
 
               <div v-else class="vpd-actions">
                 <slot
                   name="submit-btn"
-                  v-bind="{ vm, canSubmit, color, submit, lang }"
+                  v-bind="{ canSubmit, submit, lang }"
                 >
                   <button
                     type="button"
@@ -432,12 +432,12 @@
                 <slot
                   v-if="!inline"
                   name="cancel-btn"
-                  v-bind="{ vm, color, lang }"
+                  v-bind="{ lang }"
                 >
                   <button
                     type="button"
                     :style="{ color }"
-                    @click="visible = false"
+                    @click="state.visible = false"
                     v-text="lang.cancel"
                   />
                 </slot>
@@ -445,7 +445,7 @@
                 <slot
                   v-if="showNowBtn && canGoToday"
                   name="now-btn"
-                  v-bind="{ vm, color, goToday, lang }"
+                  v-bind="{ goToday, lang }"
                 >
                   <button
                     type="button"
@@ -464,1366 +464,1415 @@
 </template>
 
 <script>
-import './assets/scss/style.scss'
-import Arrow from './components/Arrow.vue'
-import Btn from './components/Btn.vue'
-import CalendarIcon from './components/CalendarIcon.vue'
-import TimeIcon from './components/TimeIcon.vue'
-import CoreModule from './modules/core'
-import LocaleChange from './components/LocaleChange'
-import { cloneDates, isSameDay } from './modules/utils'
+  import { ref, reactive, computed, watch, watchEffect, onMounted, onBeforeUnmount, nextTick } from 'vue'
+  import _ from 'lodash'
+  import CoreModule from './modules/core'
+  import { cloneDates, isSameDay } from './modules/utils'
+  import Arrow from './components/Arrow.vue'
+  import Btn from './components/Btn.vue'
+  import CalendarIcon from './components/CalendarIcon.vue'
+  import TimeIcon from './components/TimeIcon.vue'
+  import LocaleChange from './components/LocaleChange.vue'
+  import './assets/scss/style.scss'
 
-export default {
-  components: { LocaleChange, Arrow, Btn, CalendarIcon, TimeIcon },
-  model: {
-    prop: 'value',
-    event: 'input'
-  },
-  props: {
-    /**
-     * Default input value
-     * @type Number String
-     * @default []
-     * @example 1396/08/01 22:45 | 2017/07/07 20:45 | {unix} | 20:45
-     */
-    value: { type: [Number, String, Date, Array], default: '' },
-
-    /**
-     * Initial value of picker (if value is empty)
-     * @type Number String
-     * @default []
-     * @example 1370/01/01 22:45 | 2017/01/01 20:45 | {unix} | 20:45
-     * @version 1.0.9
-     */
-    initialValue: { type: [Number, String], default: '' },
-
-    /**
-     * Format for {value}
-     * @type String
-     * @default Null
-     * @example jYYYY/jMM/jDD HH:mm | YYYY/MM/DD HH:mm | x | unix | HH:mm
-     * @if empty {inputFormat} = {format}
-     * @see https://github.com/jalaali/moment-jalaali
-     */
-    inputFormat: { type: String, default: '' },
-
-    /**
-     * Format only to display the date in the field
-     * @type String
-     * @default Null
-     * @example jYYYY/jMM/jDD HH:mm | YYYY/MM/DD HH:mm | x | unix | HH:mm
-     * @if empty {displayFormat} = {format}
-     * @see https://github.com/jalaali/moment-jalaali
-     */
-    displayFormat: { type: String, default: '' },
-
-    /**
-     * Format for output value
-     * @type String
-     * @default Null
-     * @example jYYYY/jMM/jDD HH:mm | YYYY/MM/DD HH:mm | x | date | HH:mm
-     * @if empty, it will be built according to the type of picker:
-     *
-     * --- time:     HH:mm
-     * --- datetime: jYYYY/jMM/jDD HH:mm
-     * --- date:     jYYYY/jMM/jDD
-     * --- year:     jYYYY
-     * --- month:    jMM
-     *
-     * @see https://github.com/jalaali/moment-jalaali
-     */
-    format: { type: String, default: '' },
-
-    /**
-     * Step to view on startup
-     * @type String
-     * @default "day"
-     * @supported day | month | year | time
-     * @example year
-     * @desc {year} will show the "year" panel at first
-     */
-    view: { type: String, default: 'day' },
-
-    /**
-     * The picker type
-     * @type String
-     * @default "date"
-     * @supported date | datetime | year | month | time
-     */
-    type: { type: String, default: 'date' },
-
-    /**
-     * The minimum of selectable period
-     * Based on {inputFormat}
-     * @type String
-     * @default Null
-     * @example 1396/08/01 22:45 | 22:45
-     */
-    min: { type: [String], default: '' },
-
-    /**
-     * The maximum of selectable period
-     * Based on {inputFormat}
-     * @type String
-     * @default Null
-     * @example 1396/08/01 22:45 | 22:45
-     */
-    max: { type: [String], default: '' },
-
-    /**
-     * Editable input or just readonly
-     * @type Boolean
-     * @default False
-     * @if false, the picker will shown on input focus
-     * @if true, the picker will shown on label click
-     * @note if use <... :editable="true"> with <... :element="...">
-     *     then you have to control the <... :show="true or false">
-     */
-    editable: { type: Boolean, default: false },
-
-    /**
-     * The specified input element ID
-     * @type String
-     * @default Undefined
-     * @desc Sometimes you don't want to use picker default input,
-     * so you can use our own input element with "id" attribute
-     * and use <... element="the_id_of_input">
-     */
-    element: { type: String, default: undefined },
-
-    /**
-     * The form input name when not using {element}
-     * @type String
-     * @default Undefined
-     */
-    name: { type: String, default: undefined },
-
-    /**
-     * The form input className when not using {element}
-     * @type String
-     * @default "form-control"
-     */
-    inputClass: { type: String, default: 'form-control' },
-
-    /**
-     * The form input placeholder when not using {element}
-     * @type String
-     * @default Null
-     */
-    placeholder: { type: String, default: '' },
-
-    /**
-     * The name of hidden input element
-     * @type String
-     * @default Null
-     * @if empty, the hidden input will not be created
-     */
-    altName: { type: String, default: '' },
-
-    /**
-     * Format for hidden input
-     * @type String
-     * @default Null
-     * @example YYYY-MM-DD HH:mm:ss [GMT]ZZ
-     * @if empty, it will be built according to the type of picker:
-     *
-     * --- time:     HH:mm:ss [GMT]ZZ
-     * --- datetime: YYYY-MM-DD HH:mm:ss [GMT]ZZ
-     * --- date:     YYYY-MM-DD
-     * --- year:     YYYY
-     * --- month:    MM
-     */
-    altFormat: { type: String, default: '' },
-
-    /**
-     * Show or hide the picker
-     * @type Boolean
-     * @default False
-     */
-    show: { type: Boolean, default: false },
-
-    /**
-     * Primary color of picker
-     * @type String
-     */
-    color: { type: String, default: '#417df4' },
-
-    /**
-     * Auto submit and hide picker when date selected
-     * @type Boolean
-     * @default False
-     */
-    autoSubmit: { type: Boolean, default: false },
-
-    /**
-     * Auto submit when clicking the wrapper
-     * @type Boolean
-     * @default false
-     * @version 1.0.6
-     */
-    wrapperSubmit: { type: Boolean, default: false },
-
-    /**
-     * Place to append picker
-     * @type String query selector
-     * @default null
-     * @desc If you want to append picker to another container like 'body',
-     * pass the container as append-to="body",  append-to="#app",  append-to="#my-container"
-     * @example 'body', '.main-container', '#app' ...
-     * @version 1.1.1
-     */
-    appendTo: { type: String, default: null },
-
-    /**
-     * Disable or enable the datepicker
-     * @type Boolean
-     * @default false
-     * @version 1.1.4
-     */
-    disabled: { type: Boolean, default: false },
-
-    /**
-     * Disabling
-     * @type Array, String, Function, RegExp
-     * @default undefined
-     * @desc disable some dates
-     * @example ['1397/02/02', '1390/10/10'] - "1397/05/20" - /1397\/05\/(.*)/ ...
-     * @version 1.1.4
-     */
-    disable: { type: [Array, String, Function, RegExp], default: undefined },
-
-    /**
-     * Label
-     * @type String
-     * @version 1.1.4
-     */
-    label: { type: String, default: '' },
-
-    /**
-     * Highlight items
-     * @type Function
-     * @desc This prop accepts only function that return an object of attributes.
-     * @version 1.1.5
-     */
-    highlight: { type: Function, default: null },
-
-    /**
-     * Change minutes by step
-     * @type Number
-     * @default 1
-     * @version: 1.1.6
-     */
-    jumpMinute: { type: Number, default: 1 },
-
-    /**
-     * Round minutes when jumpMinute is grater than 1
-     * @example when jumpMinute = 15 thin will result: 13:00, 13:15, 13:30, 13:45 ...
-     * @type Boolean
-     * @default false
-     * @version: 1.1.6
-     */
-    roundMinute: { type: Boolean, default: false },
-
-    /**
-     * Show clear button
-     * @type Boolean
-     * @default false
-     * @version 1.1.6
-     */
-    clearable: { type: Boolean, default: false },
-
-    /**
-     * Inline mode
-     * @type Boolean
-     * @default false
-     * @version 1.1.6
-     */
-    inline: { type: Boolean, default: false },
-
-    /**
-     * Locales config ("fa" for jalali and "en" for gregorian)
-     * @type String
-     * @default fa
-     * @example fa | en | fa,en | en,fa
-     * @supported fa,en
-     * @version 2.0.0
-     */
-    locale: { type: String, default: 'fa' },
-
-    /**
-     * Locale configuration
-     * @type Object
-     * @default {}
-     * @version 2.0.0
-     * @example
-     * {
-     *  fa: {
-     *      dow: 6,             --first day of week
-     *      dir: 'rtl',         --language direction
-     *      lang: {
-     *           label:     "شمسی",
-     *           submit:    "تایید",
-     *           cancel:    "انصراف",
-     *           now:       "اکنون",
-     *           nextMonth: "ماه بعد",
-     *           prevMonth: "ماه قبل",
-     *      }
-     *  },
-     *  en: { ... }
-     * }
-     */
-    localeConfig: { type: Object, default: () => ({}) },
-
-    /**
-     * Timezone configuration
-     * @type String | Boolean | Function
-     * @default false
-     * @example true | false | +03:30 | +04:30
-     * @version 2.1.0
-     */
-    timezone: { type: [Boolean, String, Function], default: false },
-
-    /**
-     * Show or hide NOW button
-     * @type Boolean
-     * @default true
-     * @version 2.1.6
-     */
-    showNowBtn: { type: Boolean, default: true },
-
-    /**
-     * Convert to locale numbers or not
-     * @type Boolean
-     * @default false
-     * @example <date-picker convert-numbers />
-     * @version 2.3.0
-     */
-    convertNumbers: { type: Boolean, default: false },
-
-    /**
-     * Display the time on the front page
-     * @type Boolean
-     * @default false
-     * @example <date-picker compact-time />
-     * @version 2.4.0
-     */
-    compactTime: { type: Boolean, default: false },
-
-    /**
-     * Enable or disable range mode
-     * @type Boolean
-     * @default false
-     * @example <date-picker range />
-     * @version 2.5.0
-     */
-    range: { type: Boolean, default: false },
-
-    /**
-     * Enable or disable multiple mode
-     * @type Boolean
-     * @default false
-     * @example <date-picker multiple />
-     * @version 2.6.0
-     */
-    multiple: { type: Boolean, default: false },
-
-    /**
-     * Enable or disable popover mode
-     * @type Boolean | String
-     * @accepted:
-     *    true | false
-     *    top-left | top-right | bottom-right | bottom-left
-     *    left-top | left-bottom | right-top | right-bottom
-     * @default false
-     * @example <date-picker popover />
-     * @example <date-picker popover="top-left" />
-     * @version 2.6.0
-     */
-    popover: { type: [Boolean, String], default: false }
-  },
-  data() {
-    let defaultLocale = this.locale.split(',')[0]
-    let coreModule = new CoreModule(defaultLocale, this.localeConfig)
-    return {
-      core: coreModule,
-      now: coreModule.moment(),
-      date: {},
-      selectedDates: [],
-      hoveredItem: null,
-      visible: false,
-      directionClass: '',
-      directionClassDate: '',
-      directionClassTime: '',
-      classFastCounter: '',
-      steps: ['y', 'm', 'd', 't'],
-      step: 0,
-      shortCodes: {
-        year: 'y',
-        month: 'm',
-        day: 'd',
-        time: 't'
-      },
-      time: {},
-      timeData: {
-        transitionSpeed: 300,
-        timeout: false,
-        lastUpdate: new Date().getTime()
-      },
-      minDate: false,
-      maxDate: false,
-      output: [],
-      updateNowInterval: null,
-      locales: ['fa'],
-      localeData: coreModule.locale,
-      windowWidth: window.innerWidth,
-      popoverPlace: 'bottom-right'
-    }
-  },
-  computed: {
-    vm() {
-      return this
-    },
-    id() {
-      return (
-        '_' +
-        Math.random()
-          .toString(36)
-          .substr(2, 9)
+  export default {
+    components: {LocaleChange, Arrow, Btn, CalendarIcon, TimeIcon},
+    emits: ['update:modelValue', 'open', 'close', 'localeChange', 'change', 'input'],
+    install: (app, options) => {
+      let component = this
+      options = app.util.extend(
+        {
+          name: 'data-picker',
+          props: {}
+        },
+        options
       )
-    },
-    currentStep() {
-      return this.steps[this.step]
-    },
-    selectedDate() {
-      let dates = this.selectedDates
-      return dates.length ? dates[dates.length - 1] : this.date
-    },
-    formattedDate() {
-      let format = ''
 
-      if (this.hasStep('y')) format = 'jYYYY'
-      if (this.hasStep('m')) format += ' jMMMM '
-      if (this.hasStep('d')) {
-        format = this.isDataArray ? 'jD jMMMM jYYYY' : 'ddd jD jMMMM'
+      for (let k in options.props) {
+        if (component.props.hasOwnProperty(k)) {
+          component.props[k].default = options.props[k]
+        }
       }
-      if (this.hasStep('t')) format += ' HH:mm '
-
-      if (!format) return ''
-
-      let separator = this.multiple ? ' | ' : ' ~ '
-      return this.selectedDates.map(d => d.xFormat(format)).join(separator)
+      app.component(options.name, component)
     },
-    month() {
-      if (!this.hasStep('d')) return []
-      let min = this.minDate ? this.minDate.clone().startOf('day') : -Infinity
-      let max = this.maxDate ? this.maxDate.clone().endOf('day') : Infinity
-      return this.core.getWeekArray(this.date.clone()).map(weekItem => {
-        return weekItem.map(day => {
-          let data = {
-            date: day,
-            formatted: '',
-            selected: false,
-            disabled: false,
-            attributes: {}
-          }
-          if (!day) return data
-          let dayMoment = this.core.moment(day)
-          data.formatted = dayMoment.xDate()
-          data.selected = this.selectedDates.find(item => isSameDay(item, day))
-          data.disabled =
-            (this.minDate && dayMoment.clone().startOf('day') < min) ||
-            (this.maxDate && dayMoment.clone().endOf('day') > max) ||
-            this.checkDisable('d', dayMoment)
-          if (this.range && !data.disabled) {
-            let [start, end] = this.selectedDates
-            data.isFirst = data.selected && start && isSameDay(start, day)
-            data.isLast = data.selected && end && isSameDay(end, day)
-            data.isBetween =
-              !data.selected && start && end && day > start && day < end
-          }
-          data.attributes = this.getHighlights('d', dayMoment)
-          return data
-        })
+    props: {
+      /**
+       * Default input value
+       * @type Number String
+       * @default []
+       * @example 1396/08/01 22:45 | 2017/07/07 20:45 | {unix} | 20:45
+       */
+      modelValue: {type: [Number, String, Date, Array], default: ''},
+
+      /**
+       * Initial value of picker (if value is empty)
+       * @type Number String
+       * @default []
+       * @example 1370/01/01 22:45 | 2017/01/01 20:45 | {unix} | 20:45
+       * @version 1.0.9
+       */
+      initialValue: {type: [Number, String], default: ''},
+
+      /**
+       * Format for {value}
+       * @type String
+       * @default Null
+       * @example jYYYY/jMM/jDD HH:mm | YYYY/MM/DD HH:mm | x | unix | HH:mm
+       * @if empty {inputFormat} = {format}
+       * @see https://github.com/jalaali/moment-jalaali
+       */
+      inputFormat: {type: String, default: ''},
+
+      /**
+       * Format only to display the date in the field
+       * @type String
+       * @default Null
+       * @example jYYYY/jMM/jDD HH:mm | YYYY/MM/DD HH:mm | x | unix | HH:mm
+       * @if empty {displayFormat} = {format}
+       * @see https://github.com/jalaali/moment-jalaali
+       */
+      displayFormat: {type: String, default: ''},
+
+      /**
+       * Format for output value
+       * @type String
+       * @default Null
+       * @example jYYYY/jMM/jDD HH:mm | YYYY/MM/DD HH:mm | x | date | HH:mm
+       * @if empty, it will be built according to the type of picker:
+       *
+       * --- time:     HH:mm
+       * --- datetime: jYYYY/jMM/jDD HH:mm
+       * --- date:     jYYYY/jMM/jDD
+       * --- year:     jYYYY
+       * --- month:    jMM
+       *
+       * @see https://github.com/jalaali/moment-jalaali
+       */
+      format: {type: String, default: ''},
+
+      /**
+       * Step to view on startup
+       * @type String
+       * @default "day"
+       * @supported day | month | year | time
+       * @example year
+       * @desc {year} will show the "year" panel at first
+       */
+      view: {type: String, default: 'day'},
+
+      /**
+       * The picker type
+       * @type String
+       * @default "date"
+       * @supported date | datetime | year | month | time
+       */
+      type: {type: String, default: 'date'},
+
+      /**
+       * The minimum of selectable period
+       * Based on {inputFormat}
+       * @type String
+       * @default Null
+       * @example 1396/08/01 22:45 | 22:45
+       */
+      min: {type: [String], default: ''},
+
+      /**
+       * The maximum of selectable period
+       * Based on {inputFormat}
+       * @type String
+       * @default Null
+       * @example 1396/08/01 22:45 | 22:45
+       */
+      max: {type: [String], default: ''},
+
+      /**
+       * Editable input or just readonly
+       * @type Boolean
+       * @default False
+       * @if false, the picker will shown on input focus
+       * @if true, the picker will shown on label click
+       * @note if use <... :editable="true"> with <... :element="...">
+       *     then you have to control the <... :show="true or false">
+       */
+      editable: {type: Boolean, default: false},
+
+      /**
+       * The specified input element ID
+       * @type String
+       * @default Undefined
+       * @desc Sometimes you don't want to use picker default input,
+       * so you can use our own input element with "id" attribute
+       * and use <... element="the_id_of_input">
+       */
+      element: {type: String, default: undefined},
+
+      /**
+       * The form input name when not using {element}
+       * @type String
+       * @default Undefined
+       */
+      name: {type: String, default: undefined},
+
+      /**
+       * The form input className when not using {element}
+       * @type String
+       * @default "form-control"
+       */
+      inputClass: {type: String, default: 'form-control'},
+
+      /**
+       * The form input placeholder when not using {element}
+       * @type String
+       * @default Null
+       */
+      placeholder: {type: String, default: ''},
+
+      /**
+       * The name of hidden input element
+       * @type String
+       * @default Null
+       * @if empty, the hidden input will not be created
+       */
+      altName: {type: String, default: ''},
+
+      /**
+       * Format for hidden input
+       * @type String
+       * @default Null
+       * @example YYYY-MM-DD HH:mm:ss [GMT]ZZ
+       * @if empty, it will be built according to the type of picker:
+       *
+       * --- time:     HH:mm:ss [GMT]ZZ
+       * --- datetime: YYYY-MM-DD HH:mm:ss [GMT]ZZ
+       * --- date:     YYYY-MM-DD
+       * --- year:     YYYY
+       * --- month:    MM
+       */
+      altFormat: {type: String, default: ''},
+
+      /**
+       * Show or hide the picker
+       * @type Boolean
+       * @default False
+       */
+      show: {type: Boolean, default: false},
+
+      /**
+       * Primary color of picker
+       * @type String
+       */
+      color: {type: String, default: '#417df4'},
+
+      /**
+       * Auto submit and hide picker when date selected
+       * @type Boolean
+       * @default False
+       */
+      autoSubmit: {type: Boolean, default: false},
+
+      /**
+       * Auto submit when clicking the wrapper
+       * @type Boolean
+       * @default false
+       * @version 1.0.6
+       */
+      wrapperSubmit: {type: Boolean, default: false},
+
+      /**
+       * Place to append picker
+       * @type String query selector
+       * @default null
+       * @desc If you want to append picker to another container like 'body',
+       * pass the container as append-to="body",  append-to="#app",  append-to="#my-container"
+       * @example 'body', '.main-container', '#app' ...
+       * @version 1.1.1
+       */
+      appendTo: {type: String, default: null},
+
+      /**
+       * Disable or enable the datepicker
+       * @type Boolean
+       * @default false
+       * @version 1.1.4
+       */
+      disabled: {type: Boolean, default: false},
+
+      /**
+       * Disabling
+       * @type Array, String, Function, RegExp
+       * @default undefined
+       * @desc disable some dates
+       * @example ['1397/02/02', '1390/10/10'] - "1397/05/20" - /1397\/05\/(.*)/ ...
+       * @version 1.1.4
+       */
+      disable: {type: [Array, String, Function, RegExp], default: undefined},
+
+      /**
+       * Label
+       * @type String
+       * @version 1.1.4
+       */
+      label: {type: String, default: ''},
+
+      /**
+       * Highlight items
+       * @type Function
+       * @desc This prop accepts only function that return an object of attributes.
+       * @version 1.1.5
+       */
+      highlight: {type: Function, default: null},
+
+      /**
+       * Change minutes by step
+       * @type Number
+       * @default 1
+       * @version: 1.1.6
+       */
+      jumpMinute: {type: Number, default: 1},
+
+      /**
+       * Round minutes when jumpMinute is grater than 1
+       * @example when jumpMinute = 15 thin will result: 13:00, 13:15, 13:30, 13:45 ...
+       * @type Boolean
+       * @default false
+       * @version: 1.1.6
+       */
+      roundMinute: {type: Boolean, default: false},
+
+      /**
+       * Show clear button
+       * @type Boolean
+       * @default false
+       * @version 1.1.6
+       */
+      clearable: {type: Boolean, default: false},
+
+      /**
+       * Inline mode
+       * @type Boolean
+       * @default false
+       * @version 1.1.6
+       */
+      inline: {type: Boolean, default: false},
+
+      /**
+       * Locales config ("fa" for jalali and "en" for gregorian)
+       * @type String
+       * @default fa
+       * @example fa | en | fa,en | en,fa
+       * @supported fa,en
+       * @version 2.0.0
+       */
+      locale: {type: String, default: 'fa'},
+
+      /**
+       * Locale configuration
+       * @type Object
+       * @default {}
+       * @version 2.0.0
+       * @example
+       * {
+       *  fa: {
+       *      dow: 6,             --first day of week
+       *      dir: 'rtl',         --language direction
+       *      lang: {
+       *           label:     "شمسی",
+       *           submit:    "تایید",
+       *           cancel:    "انصراف",
+       *           now:       "اکنون",
+       *           nextMonth: "ماه بعد",
+       *           prevMonth: "ماه قبل",
+       *      }
+       *  },
+       *  en: { ... }
+       * }
+       */
+      localeConfig: {type: Object, default: () => ({})},
+
+      /**
+       * Timezone configuration
+       * @type String | Boolean | Function
+       * @default false
+       * @example true | false | +03:30 | +04:30
+       * @version 2.1.0
+       */
+      timezone: {type: [Boolean, String, Function], default: false},
+
+      /**
+       * Show or hide NOW button
+       * @type Boolean
+       * @default true
+       * @version 2.1.6
+       */
+      showNowBtn: {type: Boolean, default: true},
+
+      /**
+       * Convert to locale numbers or not
+       * @type Boolean
+       * @default false
+       * @example <date-picker convert-numbers />
+       * @version 2.3.0
+       */
+      convertNumbers: {type: Boolean, default: false},
+
+      /**
+       * Display the time on the front page
+       * @type Boolean
+       * @default false
+       * @example <date-picker compact-time />
+       * @version 2.4.0
+       */
+      compactTime: {type: Boolean, default: false},
+
+      /**
+       * Enable or disable range mode
+       * @type Boolean
+       * @default false
+       * @example <date-picker range />
+       * @version 2.5.0
+       */
+      range: {type: Boolean, default: false},
+
+      /**
+       * Enable or disable multiple mode
+       * @type Boolean
+       * @default false
+       * @example <date-picker multiple />
+       * @version 2.6.0
+       */
+      multiple: {type: Boolean, default: false},
+
+      /**
+       * Enable or disable popover mode
+       * @type Boolean | String
+       * @accepted:
+       *    true | false
+       *    top-left | top-right | bottom-right | bottom-left
+       *    left-top | left-bottom | right-top | right-bottom
+       * @default false
+       * @example <date-picker popover />
+       * @example <date-picker popover="top-left" />
+       * @version 2.6.0
+       */
+      popover: {type: [Boolean, String], default: false}
+    },
+    setup (props, { emit }) {
+      const defaultLocale = props.locale.split(',')[0]
+      const coreModule = new CoreModule(defaultLocale, props.localeConfig)
+      const picker = ref(null)
+      const inputGroup = ref(null)
+      const input = ref(null)
+      const container = ref(null)
+      const year = ref(null)
+      const monthEl = ref(null)
+      const time = ref(null)
+      const state = reactive({
+        core: coreModule,
+        now: coreModule.moment(),
+        date: {},
+        selectedDates: [],
+        hoveredItem: null,
+        visible: false,
+        directionClass: 'direction-prev',
+        directionClassDate: '',
+        directionClassTime: '',
+        classFastCounter: '',
+        steps: ['y', 'm', 'd', 't'],
+        step: 0,
+        shortCodes: {
+          year: 'y',
+          month: 'm',
+          day: 'd',
+          time: 't'
+        },
+        time: {},
+        timeData: {
+          transitionSpeed: 300,
+          timeout: false,
+          lastUpdate: new Date().getTime()
+        },
+        minDate: false,
+        maxDate: false,
+        output: [],
+        updateNowInterval: null,
+        locales: ['fa'],
+        localeData: coreModule.locale,
+        windowWidth: window.innerWidth,
+        popoverPlace: 'bottom-right'
       })
-    },
-    monthDays() {
-      if (!this.range || this.selectedDates.length !== 1 || !this.hoveredItem)
-        return this.month
-      let dates = [this.hoveredItem, this.selectedDates[0]]
-      dates.sort((a, b) => a - b)
-      let [start, end] = dates
-      return this.month.map(weekItem => {
-        return weekItem.map(data => {
-          if (!data.date) return data
-          if (this.range && !data.disabled) {
-            let day = data.date
-            data.isHover = !data.selected && day > start && day < end
+      const nextStep = function () {
+        let step = state.step + 1
+        if (props.compactTime && props.type === 'datetime') step += 1
+        if (state.steps.length <= step) {
+          let passSelected = state.selectedDates.length >= (props.range ? 2 : 1)
+          if ((props.autoSubmit || props.inline) && passSelected) {
+            submit(!props.multiple)
           }
-          return data
-        })
-      })
-    },
-    years() {
-      if (!this.hasStep('y') || this.currentStep !== 'y') return []
-      let moment = this.core.moment
-      let min = this.minDate ? this.minDate : moment('1300', 'jYYYY')
-      let max = this.maxDate ? this.maxDate : min.clone().add(150, 'year')
-      let cy = this.date.xYear()
-      return this.core
-        .getYearsList(min.xYear(), max.xYear())
-        .reverse()
-        .map(item => {
-          let year = moment().xYear(item)
-          year.selected = cy === item
-          year.disabled = this.checkDisable('y', item)
-          year.attributes = this.getHighlights('y', item)
-          return year
-        })
-    },
-    months() {
-      if (this.hasStep('m')) {
-        let date = this.date.clone().xStartOf('month')
-        let months = this.core.getMonthsList(this.minDate, this.maxDate, date)
-        months.forEach(m => {
-          m.selected = this.date.xMonth() === m.xMonth()
-          m.disabled = m.disabled || this.checkDisable('m', m)
-          m.attributes = this.getHighlights('m', m)
-        })
-        return months
-      }
-      return []
-    },
-    prevMonthDisabled() {
-      return (
-        this.hasStep('d') &&
-        this.minDate &&
-        this.minDate.clone().xStartOf('month') >=
-          this.date.clone().xStartOf('month')
-      )
-    },
-    nextMonthDisabled() {
-      return (
-        this.hasStep('d') &&
-        this.maxDate &&
-        this.maxDate.clone().xStartOf('month') <=
-          this.date.clone().xStartOf('month')
-      )
-    },
-    canGoToday() {
-      if (!this.minDate && !this.maxDate) return true
-      let now = this.now,
-        min = this.minDate && this.minDate <= now,
-        max = this.maxDate && now <= this.maxDate
-
-      if (this.type === 'time') {
-        if (this.minDate) {
-          min = now
-            .clone()
-            .hour(this.minDate.hour())
-            .minute(this.minDate.minute())
-          min = min <= now
-        }
-        if (this.maxDate) {
-          max = this.now
-            .clone()
-            .hour(this.maxDate.hour())
-            .minute(this.maxDate.minute())
-          max = now <= max
+        } else {
+          state.step++
+          goStep(state.step)
         }
       }
-
-      if (this.minDate && this.maxDate) return min && max
-      if (this.minDate) return min
-      if (this.maxDate) return max
-      return false
-    },
-    altFormatted() {
-      let format = this.altFormat
-      if (format === '' || format === undefined) {
-        switch (this.type) {
-          case 'time':
-            format = 'HH:mm:ss [GMT]ZZ'
-            break
-          case 'datetime':
-            format = 'YYYY-MM-DD HH:mm:ss [GMT]ZZ'
-            break
-          case 'date':
-            format = 'YYYY-MM-DD'
-            break
-          case 'year':
-            format = 'YYYY'
-            break
-          case 'month':
-            format = 'MM'
-            break
-          case 'year-month':
-            format = 'YYYY-MM'
-            break
+      const checkScroll = function () {
+        let step = _.cloneDeep(currentStep)
+        if (step.value === 'y' || (step.value === 'm' && state.visible)) {
+          setTimeout(() => {
+            let container = null
+            if (year.value) {
+              container = year.value
+              alignPosition(container)
+            }
+            if (monthEl.value) {
+              container = monthEl.value
+              alignPosition(container)
+            }
+          }, 100)
         }
       }
-      return this.output.map(d => d.format(format)).join(' ~ ')
-    },
-    selfFormat() {
-      let format = this.format
-      if (['', undefined, 'date'].indexOf(format) !== -1) {
-        switch (this.type) {
-          case 'time':
-            format = 'HH:mm'
-            break
-          case 'datetime':
-            format = 'jYYYY/jMM/jDD HH:mm'
-            break
-          case 'date':
-            format = 'jYYYY/jMM/jDD'
-            break
-          case 'year':
-            format = 'jYYYY'
-            break
-          case 'month':
-            format = 'jMM'
-            break
-          case 'year-month':
-            format = 'jYYYY/jMM'
-            break
-        }
-      }
-      return format
-    },
-    selfInputFormat() {
-      return this.inputFormat === '' || this.inputFormat === undefined
-        ? this.selfFormat
-        : this.inputFormat
-    },
-    outputValue() {
-      let output = cloneDates(this.output)
-      let format = this.selfFormat
-      let isDate = this.value instanceof Date || this.format === 'date'
-      return output.map(item => {
-        ;/j\w/.test(format) && item.locale('fa')
-        this.setTimezone(item, 'out')
-        return isDate ? item.toDate() : item.format(format)
-      })
-    },
-    selfDisplayFormat() {
-      let format = this.displayFormat || this.selfFormat
-      let localeFormat = this.localeData.config.displayFormat
-      if (localeFormat) {
-        return typeof localeFormat === 'function'
-          ? localeFormat(this)
-          : localeFormat
-      }
-      if (this.localeData.name !== 'fa') {
-        format = format.replace(/j/g, '')
-      }
-      return format
-    },
-    displayValue() {
-      let format = this.selfDisplayFormat
-      return this.output
-        .map(item => {
-          let output = item.clone()
-          ;/j\w/.test(format) && output.locale('fa')
-          return this.convertToLocaleNumber(output.format(format))
-        })
-        .join(' ~ ')
-    },
-    isDisableTime() {
-      return this.hasStep('t') && this.checkDisable('t', this.time)
-    },
-    timeAttributes() {
-      return this.hasStep('t') ? this.getHighlights('t', this.time) : {}
-    },
-    canSubmit() {
-      if (!this.disable) return true
-      let can = true
-      if (this.hasStep('t')) can = !this.isDisableTime
-      if (can && this.type !== 'time') can = !this.checkDisable('d', this.date)
-      return can
-    },
-    weekDays() {
-      let names = JSON.parse(
-        JSON.stringify(
-          this.core
-            .moment()
-            .localeData()
-            .weekdaysMin()
-        )
-      )
-      let dow = this.core.locale.config.dow
-      while (dow > 0) {
-        names.push(names.shift())
-        dow--
-      }
-      return names
-    },
-    lang() {
-      return this.localeData.config.lang
-    },
-    isPopover() {
-      return (this.popover === '' || this.popover) && this.windowWidth > 480
-    },
-    isDataArray() {
-      return this.range || this.multiple
-    }
-  },
-  watch: {
-    type: { handler: 'setType', immediate: true },
-    view: { handler: 'setView', immediate: true },
-    value: { handler: 'updateDates', immediate: true },
-    min: { handler: 'setMinMax', immediate: true },
-    max: { handler: 'setMinMax', immediate: true },
-    timezone: { handler: 'updateDates' },
-    inline: {
-      handler(val) {
-        if (!this.disabled) this.visible = !!val
-      },
-      immediate: true
-    },
-    disabled: {
-      handler(val) {
-        if (val) this.visible = false
-        else if (this.inline) this.visible = true
-      },
-      immediate: true
-    },
-    selectedDate(val, old) {
-      this.setDirection('directionClass', val, old)
-    },
-    date(val, old) {
-      this.setDirection('directionClassDate', val, old)
-      if (this.isLower(this.date)) this.date = this.minDate.clone()
-      if (this.isMore(this.date)) this.date = this.maxDate.clone()
-    },
-    time: {
-      handler(val, old) {
-        if (this.hasStep('t') && this.roundMinute) {
-          let time = this.time.clone()
-          let jm = this.jumpMinute
-          let m = (jm - (time.minute() % jm)) % jm
-          time.add({ m })
-          if (time.valueOf() !== this.time.valueOf()) {
-            this.time = time
-            // @todo: this line should apply time to current date selection,
-            // not all of them
-            this.selectedDates.forEach(d => d.set({ m: time.minute() }))
-          }
-        }
-        if (old) this.setDirection('directionClassTime', val, old)
-      },
-      immediate: true
-    },
-    visible(val) {
-      if (val) {
-        if (this.disabled) return (this.visible = false)
-        if (this.type === 'datetime' && this.view === 'day') this.goStep('d')
-        if (this.view !== 'day') this.goStep(this.shortCodes[this.view] || 'd')
-        this.$nextTick(() => {
-          if (this.appendTo) {
+      const alignPosition = function (container) {
+        if (container) {
+          let selected = container.querySelector('.vpd-selected')
+          if (selected && 'scrollIntoView' in selected) {
             try {
-              let container = document.querySelector(this.appendTo)
-              container.appendChild(this.$refs.picker)
+              selected.scrollIntoView({ block: 'center' })
             } catch (er) {
-              // eslint-disable-next-line
-              console.warn(`Cannot append picker to "${this.appendTo}"!`)
+              selected.scrollIntoView()
             }
           }
+        }
+      }
+      const goStep = function (i) {
+        state.step = typeof i === 'number' ? i : state.steps.indexOf(i)
+        checkScroll()
+      }
+      const fastUpdateCounter = function (e) {
+        if (!e) state.timeData.transitionSpeed = 300
+        state.classFastCounter = e ? 'fast-updating' : ''
+      }
+      const nextMonth = function () {
+        state.date = state.date.clone().xAdd(1, 'month')
+      }
+      const prevMonth = function () {
+        state.date = state.date.clone().xAdd(-1, 'month')
+      }
+      const selectDay = function (day) {
+        if (!day.date || day.disabled) return
+        let date = state.core.moment(day.date)
+        date.set({
+          hour: state.time.hour(),
+          minute: state.time.minute(),
+          second: 0
         })
-        this.checkScroll()
-        this.setPlacement()
-        this.$emit('open', this)
-      } else {
-        if (this.inline && !this.disabled) return (this.visible = true)
-        this.$emit('close', this)
-      }
-    },
-    show(val) {
-      this.visible = val
-    },
-    locale: {
-      immediate: true,
-      handler(val) {
-        let locales = val.toString().split(',')
-        this.locales = locales.length ? locales : ['fa']
-        if (this.core.locale.name !== this.locales[0])
-          this.setLocale(this.locales[0])
-      }
-    },
-    localeConfig: {
-      deep: true,
-      immediate: true,
-      handler(config) {
-        this.core.setLocalesConfig(config)
-        this.setLocale(this.localeData.name)
-      }
-    },
-    'localeData.name'() {
-      this.$emit('localeChange', this.localeData)
-      this.setMinMax()
-    }
-  },
-  created() {
-    this.updateNowInterval = setInterval(() => {
-      this.now = this.core.moment()
-    }, 1000)
-  },
-  mounted() {
-    this.$nextTick(() => {
-      let addEvent = (el, type, handler) => {
-        if (el.attachEvent) el.attachEvent('on' + type, handler)
-        else el.addEventListener(type, handler)
-      }
-      let live = (selector, event, callback, context) => {
-        addEvent(context || document, event, function(e) {
-          let found,
-            el = e.target || e.srcElement
-          while (el && !(found = el.id === selector)) el = el.parentElement
-          if (found) callback.call(el, e)
-        })
-      }
-      if (this.element && !this.editable) {
-        live(this.element, 'click', this.focus)
-      }
-    })
-    document.body.addEventListener('keydown', e => {
-      e = e || event
-      let code = e.keyCode
-      if ((code === 9 || code === 27) && this.visible) this.visible = false
-    })
-    window.addEventListener('resize', this.onWindowResize, true)
-    window.addEventListener('mousedown', this.onWindowClick, true)
-  },
-  beforeDestroy() {
-    window.clearInterval(this.updateNowInterval)
-    window.removeEventListener('resize', this.onWindowResize, true)
-    window.removeEventListener('mousedown', this.onWindowClick, true)
-    let picker = this.$refs.picker
-    if (this.appendTo && picker && picker.$el && picker.$el.parentNode) {
-      picker.$el.parentNode.removeChild(picker.$el)
-    }
-  },
-  methods: {
-    nextStep() {
-      let step = this.step + 1
-      if (this.compactTime && this.type === 'datetime') step += 1
-      if (this.steps.length <= step) {
-        let passSelected = this.selectedDates.length >= (this.range ? 2 : 1)
-        if ((this.autoSubmit || this.inline) && passSelected) {
-          this.submit(!this.multiple)
-        }
-      } else {
-        this.step++
-        this.goStep(this.step)
-      }
-    },
-    goStep(i) {
-      this.step = typeof i === 'number' ? i : this.steps.indexOf(i)
-      this.checkScroll()
-    },
-    checkScroll() {
-      let step = this.currentStep
-      if (step === 'y' || (step === 'm' && this.visible)) {
-        setTimeout(() => {
-          let container = this.$refs[{ y: 'year', m: 'month' }[step]]
-          if (container) {
-            let selected = container.querySelector('.vpd-selected')
-            if (selected && 'scrollIntoView' in selected) {
-              try {
-                selected.scrollIntoView({ block: 'center' })
-              } catch (er) {
-                selected.scrollIntoView()
-              }
-            }
-          }
-        }, 100)
-      }
-    },
-    fastUpdateCounter(e) {
-      if (!e) this.timeData.transitionSpeed = 300
-      this.classFastCounter = e ? 'fast-updating' : ''
-    },
-    nextMonth() {
-      this.date = this.date.clone().xAdd(1, 'month')
-    },
-    prevMonth() {
-      this.date = this.date.clone().xAdd(-1, 'month')
-    },
-    selectDay(day) {
-      if (!day.date || day.disabled) return
-      let date = this.core.moment(day.date)
-      date.set({
-        hour: this.time.hour(),
-        minute: this.time.minute(),
-        second: 0
-      })
-      this.date = date.clone()
-      this.time = date.clone()
-      if (this.range) {
-        let length = this.selectedDates.length
-        if (!length || length > 1) {
-          this.selectedDates = [date.clone()]
-        } else {
-          this.selectedDates.push(date.clone())
-          this.selectedDates.sort((a, b) => a - b)
-        }
-      } else if (this.multiple) {
-        let exists = this.selectedDates.findIndex(
-          d => d.valueOf() === date.valueOf()
-        )
-        if (exists > -1) {
-          this.selectedDates.splice(exists, 1)
-        } else {
-          this.selectedDates.push(date.clone())
-        }
-      } else {
-        this.selectedDates = [date.clone()]
-      }
-      this.nextStep()
-    },
-    selectYear(year) {
-      if (year.disabled) return
-      this.date = this.date.clone().xYear(year.xYear())
-      this.nextStep()
-    },
-    selectMonth(month) {
-      if (month.disabled) return
-      this.date = this.date.clone().xMonth(month.xMonth())
-      this.nextStep()
-    },
-    setTime(v, k) {
-      let time = this.time.clone()
-
-      time.add({ [k]: v })
-
-      if (this.type !== 'time') {
-        let date = this.date.clone()
-        time.set({ year: date.year(), month: date.month(), date: date.date() })
-        date.set({ hour: time.hour(), minute: time.minute() })
-        this.date = date
-      }
-
-      if (this.isLower(time)) time = this.minDate.clone()
-      if (this.isMore(time)) time = this.maxDate.clone()
-
-      this.time = time
-
-      let now = new Date().getTime(),
-        def = now - this.timeData.lastUpdate
-      if (20 < def && def < 300) this.timeData.transitionSpeed = def
-      this.timeData.lastUpdate = now
-
-      window.clearTimeout(this.timeData.timeout)
-      this.timeData.timeout = window.setTimeout(() => {
-        this.timeData.transitionSpeed = 300
-      }, 300)
-    },
-    wheelSetTime(k, e) {
-      let delta = k === 'm' ? this.jumpMinute : 1
-      this.setTime(e.wheelDeltaY > 0 ? delta : -delta, k)
-    },
-    submit(close = true) {
-      let steps = this.steps.length - 1
-      let selected = this.selectedDates
-      if (this.compactTime && this.type === 'datetime') steps -= 1
-      if (this.step < steps) return this.nextStep()
-
-      if (this.hasStep('t')) {
-        let t = { hour: this.time.hour(), minute: this.time.minute() }
-        this.date = this.date.set(t).clone()
-        this.selectedDates = selected.map(d => d.set(t).clone())
-      }
-
-      if (['year', 'month', 'year-month'].indexOf(this.type) !== -1)
-        this.selectedDates = selected.map(() => this.date.clone())
-
-      if (this.range && selected.length > 1) {
-        selected[0].xStartOf('day')
-        selected[1].xEndOf('day')
-      }
-
-      this.output = cloneDates(selected)
-      if (close) this.visible = false
-
-      if (this.isDataArray) {
-        this.$emit('input', this.outputValue)
-        this.$emit('change', cloneDates(selected))
-      } else {
-        this.$emit('input', this.outputValue[0])
-        this.$emit('change', selected[0].clone())
-      }
-    },
-    updateDates(payload) {
-      if (this.isDataArray && !payload) payload = []
-
-      const payloadIsArray = payload instanceof Array
-      const getDate = (input, index = 0) => {
-        let date
-        let startValue =
-          this.value instanceof Array ? this.value[index] : this.value
-        try {
-          let isObject = typeof input === 'object'
-          if (input instanceof Date) {
-            date = this.getMoment(input)
-          } else if (input && isObject && 'clone' in input) {
-            date = input.clone()
-          } else if (null === input || !isObject) {
-            date = this.getMoment(input || startValue || this.initialValue)
-          }
-          date = date.isValid() ? date : this.core.moment()
-        } catch (e) {
-          date = this.core.moment()
-        }
-        this.setTimezone(date, 'in')
-        return date
-      }
-
-      if (payloadIsArray) {
-        this.date = getDate(payload[0])
-        this.selectedDates = payload.map(getDate)
-      } else {
-        this.date = getDate(payload)
-      }
-
-      if (!this.hasStep('t')) this.date.set({ hour: 0, minute: 0, second: 0 })
-
-      if (this.isLower(this.date)) {
-        this.date = this.minDate.clone()
-      } else if (this.isMore(this.date)) {
-        this.date = this.maxDate.clone()
-      }
-
-      if (!payloadIsArray) this.selectedDates = [this.date.clone()]
-      this.time = this.date.clone()
-
-      if (this.value !== '' && this.value !== null && this.value.length) {
-        this.output = cloneDates(this.selectedDates)
-      } else {
-        this.output = []
-        this.$forceUpdate()
-      }
-    },
-    goToday() {
-      let now = this.core.moment()
-      if (!this.hasStep('t')) now.set({ hour: 0, minute: 0, second: 0 })
-      this.date = now.clone()
-      this.time = now.clone()
-      this.selectedDates = [now.clone()]
-    },
-    setType() {
-      switch (this.type) {
-        case 'date':
-          this.steps = ['y', 'm', 'd']
-          this.goStep('d')
-          break
-        case 'datetime':
-          this.steps = ['y', 'm', 'd', 't']
-          this.goStep('d')
-          break
-        case 'year':
-          this.steps = ['y']
-          this.goStep('y')
-          break
-        case 'month':
-          this.steps = ['m']
-          this.goStep('m')
-          break
-        case 'time':
-          this.steps = ['t']
-          this.goStep('t')
-          break
-        case 'year-month':
-          this.steps = ['y', 'm']
-          this.goStep('y')
-          break
-      }
-    },
-    setView() {
-      let s = this.shortCodes[this.view]
-      if (this.hasStep(s)) this.goStep(s)
-    },
-    setDirection(prop, val, old) {
-      this[prop] = val > old ? 'direction-next' : 'direction-prev'
-    },
-    setMinMax() {
-      let min = this.getMoment(this.min),
-        max = this.getMoment(this.max)
-      this.minDate = this.min && min.isValid() ? min : false
-      this.maxDate = this.max && max.isValid() ? max : false
-    },
-    getMoment(date) {
-      let d,
-        moment = this.core.moment
-
-      if (date instanceof Date) return moment(date)
-
-      if (this.selfInputFormat === 'x' || this.selfInputFormat === 'unix') {
-        d = moment(date.toString().length === 10 ? date * 1000 : date * 1)
-      } else {
-        try {
-          if (date) {
-            let a = moment(date, this.selfInputFormat)
-            let b = moment(date, this.selfFormat)
-            let now = moment(),
-              year = now.xYear()
-            if (this.type === 'month') {
-              a.xYear(year)
-              b.xYear(year)
-            } else if (this.type === 'time') {
-              a = now.clone().set({
-                h: a.hour(),
-                m: a.minute(),
-                s: 0
-              })
-              b = a.clone()
-            }
-            if (a.year() !== b.year() && a.year() < 1900) {
-              d = b.clone()
-            } else {
-              d = a.clone()
-            }
+        state.date = date.clone()
+        state.time = date.clone()
+        if (props.range) {
+          let length = state.selectedDates.length
+          if (!length || length > 1) {
+            state.selectedDates = [date.clone()]
           } else {
+            state.selectedDates.push(date.clone())
+            state.selectedDates.sort((a, b) => a - b)
+          }
+        } else if (props.multiple) {
+          let exists = state.selectedDates.findIndex(
+            d => d.valueOf() === date.valueOf()
+          )
+          if (exists > -1) {
+            state.selectedDates.splice(exists, 1)
+          } else {
+            state.selectedDates.push(date.clone())
+          }
+        } else {
+          state.selectedDates = [date.clone()]
+        }
+        nextStep()
+      }
+      const selectYear = function (year) {
+        if (year.disabled) return
+        state.date = state.date.clone().xYear(year.xYear())
+        nextStep()
+      }
+      const selectMonth = function (month) {
+        if (month.disabled) return
+        state.date = state.date.clone().xMonth(month.xMonth())
+        nextStep()
+      }
+      const setTime = function (v, k) {
+        let time = state.time.clone()
+
+        time.add({[k]: v})
+
+        if (props.type !== 'time') {
+          let date = state.date.clone()
+          time.set({year: date.year(), month: date.month(), date: date.date()})
+          date.set({hour: time.hour(), minute: time.minute()})
+          state.date = date
+        }
+
+        if (isLower(time)) time = state.minDate.clone()
+        if (isMore(time)) time = state.maxDate.clone()
+
+        state.time = time
+
+        let now = new Date().getTime(),
+          def = now - state.timeData.lastUpdate
+        if (20 < def && def < 300) state.timeData.transitionSpeed = def
+        state.timeData.lastUpdate = now
+
+        window.clearTimeout(state.timeData.timeout)
+        state.timeData.timeout = window.setTimeout(() => {
+          state.timeData.transitionSpeed = 300
+        }, 300)
+      }
+      const wheelSetTime = function (k, e) {
+        let delta = k === 'm' ? props.jumpMinute : 1
+        this.setTime(e.wheelDeltaY > 0 ? delta : -delta, k)
+      }
+      const submit = function (close = true) {
+        let steps = state.steps.length - 1
+        let selected = state.selectedDates
+        if (props.compactTime && props.type === 'datetime') steps -= 1
+        if (state.step < steps) return nextStep()
+
+        if (hasStep('t')) {
+          let t = { hour: state.time.hour(), minute: state.time.minute() }
+          state.date = state.date.set(t).clone()
+          state.selectedDates = selected.map(d => d.set(t).clone())
+        }
+
+        if (['year', 'month', 'year-month'].indexOf(props.type) !== -1)
+          state.selectedDates = selected.map(() => state.date.clone())
+
+        if (props.range && selected.length > 1) {
+          selected[0].xStartOf('day')
+          selected[1].xEndOf('day')
+        }
+
+        state.output = cloneDates(selected)
+        if (close) state.visible = false
+
+        if (isDataArray) {
+          emit('input', outputValue)
+          emit('change', cloneDates(selected))
+        } else {
+          emit('input', outputValue[0])
+          emit('change', selected[0].clone())
+        }
+      }
+      const updateDates = function (payload) {
+        if (isDataArray && !payload) payload = []
+        const payloadIsArray = payload instanceof Array
+        const getDate = (input, index = 0) => {
+          let date
+          let startValue =
+            props.modelValue instanceof Array ? props.modelValue[index] : props.modelValue
+          try {
+            let isObject = typeof input === 'object'
+            if (input instanceof Date) {
+              date = getMoment(input)
+            } else if (input && isObject && 'clone' in input) {
+              date = input.clone()
+            } else if (null === input || !isObject) {
+              date = getMoment(input || startValue || props.initialValue)
+            }
+            date = date.isValid() ? date : state.core.moment()
+          } catch (e) {
+            date = state.core.moment()
+          }
+          setTimezone(date, 'in')
+          return date
+        }
+
+        if (payloadIsArray) {
+          state.date = getDate(payload[0])
+          state.selectedDates = payload.map(getDate)
+        } else {
+          state.date = getDate(payload)
+        }
+
+        if (!hasStep('t')) state.date.set({hour: 0, minute: 0, second: 0})
+
+        if (isLower(state.date)) {
+          state.date = state.minDate.clone()
+        } else if (isMore(state.date)) {
+          state.date = state.maxDate.clone()
+        }
+
+        if (!payloadIsArray) state.selectedDates = [state.date.clone()]
+        state.time = state.date.clone()
+
+        if (props.modelValue !== '' && props.modelValue !== null && props.modelValue.length) {
+          state.output = cloneDates(state.selectedDates)
+        } else {
+          state.output = []
+          // this.$forceUpdate()
+        }
+      }
+      const goToday = function () {
+        let now = state.core.moment()
+        if (!hasStep('t')) now.set({hour: 0, minute: 0, second: 0})
+        state.date = now.clone()
+        state.time = now.clone()
+        state.selectedDates = [now.clone()]
+      }
+      const setType = function () {
+        switch (props.type) {
+          case 'date':
+            state.steps = ['y', 'm', 'd']
+            goStep('d')
+            break
+          case 'datetime':
+            state.steps = ['y', 'm', 'd', 't']
+            goStep('d')
+            break
+          case 'year':
+            state.steps = ['y']
+            goStep('y')
+            break
+          case 'month':
+            state.steps = ['m']
+            goStep('m')
+            break
+          case 'time':
+            state.steps = ['t']
+            goStep('t')
+            break
+          case 'year-month':
+            state.steps = ['y', 'm']
+            goStep('y')
+            break
+        }
+      }
+      const setView = function () {
+        let s = state.shortCodes[props.view]
+        if (hasStep(s)) goStep(s)
+      }
+      const setDirection = function (prop, val, old) {
+        prop = val > old ? 'direction-next' : 'direction-prev'
+        return prop
+      }
+      const setMinMax = function () {
+        let min = getMoment(props.min)
+        let max = getMoment(props.max)
+        state.minDate = props.min && min.isValid() ? min : false
+        state.maxDate = props.max && max.isValid() ? max : false
+      }
+      const getMoment = function (date) {
+        let d
+        let moment = state.core.moment
+
+        if (date instanceof Date) return moment(date)
+        if (selfInputFormat.value === 'x' || selfInputFormat.value === 'unix') {
+          d = moment(date.toString().length === 10 ? date * 1000 : date * 1)
+        } else {
+          try {
+            if (date) {
+              let a = moment(date, selfInputFormat.value.value)
+              let b = moment(date, selfFormat.value.value)
+              let now = moment()
+              let year = now.xYear()
+              if (props.type === 'month') {
+                a.xYear(year)
+                b.xYear(year)
+              } else if (props.type === 'time') {
+                a = now.clone().set({
+                  h: a.hour(),
+                  m: a.minute(),
+                  s: 0
+                })
+                b = a.clone()
+              }
+              if (a.year() !== b.year() && a.year() < 1900) {
+                d = b.clone()
+              } else {
+                d = a.clone()
+              }
+            } else {
+              d = moment()
+            }
+          } catch (er) {
             d = moment()
           }
-        } catch (er) {
-          d = moment()
         }
+        return d
       }
-      return d
-    },
-    focus(e) {
-      if (this.editable) {
-        if (this.$refs.input) this.$refs.input.focus()
-      } else {
-        if (e) {
-          e.preventDefault()
-          e.stopPropagation()
-          e.target.blur()
-          this.visible = !this.visible
+      const focus = function (e) {
+        if (props.editable) {
+          if (input) input.value.focus()
         } else {
-          this.visible = true
+          if (e) {
+            e.preventDefault()
+            e.stopPropagation()
+            e.target.blur()
+            state.visible = !state.visible
+          } else {
+            state.visible = true
+          }
+          return false
         }
-        return false
       }
-    },
-    hasStep(step) {
-      return this.steps.indexOf(step) !== -1
-    },
-    setOutput(e) {
-      if (!this.editable) return
-      let value = e.target.value.split('~')
+      const hasStep = function (step) {
+        return state.steps.indexOf(step) !== -1
+      }
+      const setOutput = function (e) {
+        if (!props.editable) return
+        let value = e.target.value.split('~')
+        let output = value.map(item => {
+          item = `${item}`.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '')
+          if (item === '') return null
+          try {
+            let date = state.core.moment(item, selfDisplayFormat.value)
+            return date.isValid() ? date : null
+          } catch (er) {
+            return null
+          }
+        })
+        state.output = output.filter(d => d)
+        state.output.sort((a, b) => a - b)
 
-      let output = value.map(item => {
-        item = `${item}`.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '')
-        if (item === '') return null
+        if (state.output.length) {
+          updateDates(cloneDates(state.output))
+          submit()
+        } else {
+          // this.$forceUpdate()
+          emit('input', isDataArray ? [] : null)
+          emit('change', isDataArray ? [] : null)
+        }
+      }
+      const wrapperClick = function () {
+        state.visible = false
+        if (props.wrapperSubmit && canSubmit) {
+          submit()
+        }
+      }
+      const applyDevFn = function (fn, k) {
+        let result = false
+        let args = Array.prototype.splice.call(arguments, 2)
         try {
-          let date = this.core.moment(item, this.selfDisplayFormat)
-          return date.isValid() ? date : null
+          args.push({y: 'year', m: 'month', d: 'day', t: 'time'}[k])
+          result = fn.apply(null, args)
         } catch (er) {
-          return null
+          // eslint-disable-next-line
+          console.error(er)
         }
-      })
-
-      this.output = output.filter(d => d)
-      this.output.sort((a, b) => a - b)
-
-      if (this.output.length) {
-        this.updateDates(cloneDates(this.output))
-        this.submit()
-      } else {
-        this.$forceUpdate()
-        this.$emit('input', this.isDataArray ? [] : null)
-        this.$emit('change', this.isDataArray ? [] : null)
+        return result
       }
-    },
-    wrapperClick() {
-      this.visible = false
-      if (this.wrapperSubmit && this.canSubmit) {
-        this.submit()
-      }
-    },
-    applyDevFn(fn, k) {
-      let result = false
-      let args = Array.prototype.splice.call(arguments, 2)
-      try {
-        args.push({ y: 'year', m: 'month', d: 'day', t: 'time' }[k])
-        result = fn.apply(null, args)
-      } catch (er) {
-        // eslint-disable-next-line
-        console.error(er)
-      }
-      return result
-    },
-    checkDisable(item, value) {
-      let thisDisable = this.disable
-      if (!thisDisable) return false
-      let type = typeof thisDisable
+      const checkDisable = function (item, value) {
+        let thisDisable = props.disable
+        if (!thisDisable) return false
+        let type = typeof thisDisable
 
-      let checkString = (filter, str, date) => {
-        if (filter instanceof RegExp) return filter.test(str)
-        if (filter === str) return true
-        if (item === 'd') {
-          let length = filter.length
-          return (
-            str.substr(0, length) === filter ||
-            date
-              .clone()
-              .locale('en')
-              .format('dddd') === filter
-          )
-        }
-        return false
-      }
-
-      let check = (date, dateFormatted) => {
-        let matches = false
-        if (type === 'function') {
-          return this.applyDevFn(thisDisable, item, dateFormatted, date.clone())
-        } else if (
-          Object.prototype.toString.call(thisDisable) === '[object Array]'
-        ) {
-          let ii = thisDisable.length
-          for (let i = 0; i < ii; i++) {
-            matches = checkString(thisDisable[i], dateFormatted, date)
-            if (matches) break
+        let checkString = (filter, str, date) => {
+          if (filter instanceof RegExp) return filter.test(str)
+          if (filter === str) return true
+          if (item === 'd') {
+            let length = filter.length
+            return (
+              str.substr(0, length) === filter ||
+              date
+                .clone()
+                .locale('en')
+                .format('dddd') === filter
+            )
           }
-          return matches
-        } else if (type === 'string' || thisDisable instanceof RegExp) {
-          return checkString(thisDisable, dateFormatted, date)
+          return false
         }
-        return false
-      }
 
-      let format = this.selfFormat
-      if (item === 'y') {
-        value = this.core.moment(value, 'jYYYY')
-      } else if (item === 'd') {
-        // remove time from format
-        format = format.replace(/(H(H?))|(h(h?))?(:?)m(m?)(:?)(s(s?))?/g, '')
+        let check = (date, dateFormatted) => {
+          let matches = false
+          if (type === 'function') {
+            return applyDevFn(thisDisable, item, dateFormatted, date.clone())
+          } else if (
+            Object.prototype.toString.call(thisDisable) === '[object Array]'
+          ) {
+            let ii = thisDisable.length
+            for (let i = 0; i < ii; i++) {
+              matches = checkString(thisDisable[i], dateFormatted, date)
+              if (matches) break
+            }
+            return matches
+          } else if (type === 'string' || thisDisable instanceof RegExp) {
+            return checkString(thisDisable, dateFormatted, date)
+          }
+          return false
+        }
+
+        let format = selfFormat.value
+        if (item === 'y') {
+          value = state.core.moment(value, 'jYYYY')
+        } else if (item === 'd') {
+          // remove time from format
+          format = format.replace(/(H(H?))|(h(h?))?(:?)m(m?)(:?)(s(s?))?/g, '')
+        }
+        return check(value, value.format(format))
       }
-      return check(value, value.format(format))
-    },
-    getHighlights(item, value) {
-      let highlight = this.highlight
-      if (!highlight || typeof highlight !== 'function') return {}
-      if (item === 'y') value = this.core.moment(value, 'jYYYY')
-      return (
-        this.applyDevFn(
-          highlight,
-          item,
-          value.format(this.selfFormat),
-          value.clone()
-        ) || {}
-      )
-    },
-    isLower(date) {
-      return this.minDate && date < this.minDate
-    },
-    isMore(date) {
-      return this.maxDate && date > this.maxDate
-    },
-    clearValue() {
-      if (this.disabled) return
-      this.output = []
-      this.$emit('input', this.isDataArray ? [] : '')
-      this.$emit('change', this.isDataArray ? [] : null)
-    },
-    setLocale(locale) {
-      this.core.changeLocale(locale, this.localeConfig)
-      this.date = this.date.clone()
-      this.selectedDates = this.selectedDates.map(d => d.clone())
-      this.$forceUpdate()
-    },
-    setTimezone(date, mode) {
-      let tz = this.timezone
-      if (tz) {
-        let r = mode === 'in' ? 1 : -1
-        let moment = this.core.moment
-        if (typeof tz === 'string') {
-          let t =
-            moment()
-              .utc()
-              .format('YYYY-MM-DDTHH:mm:ss') + tz
-          date.add(moment.parseZone(t).utcOffset() * r, 'minutes')
-        } else if (typeof tz === 'boolean' && tz) {
-          date.subtract(new Date(date).getTimezoneOffset() * r, 'minutes')
-        } else if (typeof tz === 'function') {
-          date = tz(date, mode, this)
+      const getHighlights = function (item, value) {
+        let highlight = props.highlight
+        if (!highlight || typeof highlight !== 'function') return {}
+        if (item === 'y') value = state.core.moment(value, 'jYYYY')
+        return (
+          applyDevFn(
+            highlight,
+            item,
+            value.format(selfFormat),
+            value.clone()
+          ) || {}
+        )
+      }
+      const isLower = function (date) {
+        return state.minDate && date < state.minDate
+      }
+      const isMore = function (date) {
+        return state.maxDate && date > state.maxDate
+      }
+      const clearValue = function () {
+        if (props.disabled) return
+        state.output = []
+        emit('input', isDataArray ? [] : '')
+        emit('change', isDataArray ? [] : null)
+      }
+      const setLocale = function (locale) {
+        state.core.changeLocale(locale, props.localeConfig)
+        // state.date = state.date.clone()
+        state.selectedDates = state.selectedDates.map(d => d.clone())
+        // this.$forceUpdate()
+      }
+      const setTimezone = function (date, mode) {
+        let tz = props.timezone
+        if (tz) {
+          let r = mode === 'in' ? 1 : -1
+          let moment = state.core.moment
+          if (typeof tz === 'string') {
+            let t =
+              moment()
+                .utc()
+                .format('YYYY-MM-DDTHH:mm:ss') + tz
+            date.add(moment.parseZone(t).utcOffset() * r, 'minutes')
+          } else if (typeof tz === 'boolean' && tz) {
+            date.subtract(new Date(date).getTimezoneOffset() * r, 'minutes')
+          } else if (typeof tz === 'function') {
+            date = tz(date, mode, this)
+          }
+        }
+        return date.clone()
+      }
+      const convertToLocaleNumber = function (value) {
+        if (props.convertNumbers && props.locale === 'fa') {
+          return `${value}`.replace(/\d+/g, function (digit) {
+            let ret = ''
+            for (let i = 0, len = digit.length; i < len; i++) {
+              ret += String.fromCharCode(digit.charCodeAt(i) + 1728)
+            }
+            return ret
+          })
+        }
+        return value
+      }
+      const onWindowResize = function () {
+        state.windowWidth = window.innerWidth
+      }
+      const onWindowClick = function (event) {
+        if (isPopover.value !== null && picker.value !== null && inputGroup.value !== null) {
+          let isOnPicker = picker.value.contains(event.target)
+          let isOnInput = inputGroup.value.contains(event.target)
+          if (isOnPicker) event.preventDefault()
+          if (!isOnPicker && !isOnInput) {
+            // setTimeout because:
+            // first read the input value
+            // then process the output
+            // then close the picker
+            setTimeout(() => (state.visible = false), props.editable ? 500 : 0)
+          }
         }
       }
-      return date.clone()
-    },
-    convertToLocaleNumber(value) {
-      if (this.convertNumbers && this.locale === 'fa') {
-        return `${value}`.replace(/\d+/g, function(digit) {
-          let ret = ''
-          for (let i = 0, len = digit.length; i < len; i++) {
-            ret += String.fromCharCode(digit.charCodeAt(i) + 1728)
-          }
-          return ret
+      const setPlacement = function () {
+        if (!isPopover) return
+        let allowed = [
+          'top-left',
+          'top-right',
+          'bottom-right',
+          'bottom-left',
+          'left-top',
+          'left-bottom',
+          'right-top',
+          'right-bottom'
+        ]
+        if (allowed.indexOf(props.popover) !== -1)
+          return (state.popoverPlace = props.popover)
+
+        state.popoverPlace = 'bottom-right'
+        nextTick(() => {
+          let placement = ['bottom', 'right']
+          let rect = container.value.getBoundingClientRect()
+          let left = rect.left
+          let bottom = window.innerHeight - rect.bottom
+          if (bottom <= 0) placement[0] = 'top'
+          if (left <= 0) placement[1] = 'left'
+          state.popoverPlace = placement.join('-')
         })
       }
-      return value
-    },
-    onWindowResize() {
-      this.windowWidth = window.innerWidth
-    },
-    onWindowClick(event) {
-      if (this.isPopover && this.$refs.picker && this.$refs.inputGroup) {
-        let isOnPicker = this.$refs.picker.contains(event.target)
-        let isOnInput = this.$refs.inputGroup.contains(event.target)
-        if (isOnPicker) event.preventDefault()
-        if (!isOnPicker && !isOnInput) {
-          // setTimeout because:
-          // first read the input value
-          // then process the output
-          // then close the picker
-          setTimeout(() => (this.visible = false), this.editable ? 500 : 0)
-        }
-      }
-    },
-    setPlacement() {
-      if (!this.isPopover) return
-      let allowed = [
-        'top-left',
-        'top-right',
-        'bottom-right',
-        'bottom-left',
-        'left-top',
-        'left-bottom',
-        'right-top',
-        'right-bottom'
-      ]
-      if (allowed.indexOf(this.popover) !== -1)
-        return (this.popoverPlace = this.popover)
-
-      this.popoverPlace = 'bottom-right'
-      this.$nextTick(() => {
-        let placement = ['bottom', 'right']
-        let container = this.$refs.container
-        let rect = container.getBoundingClientRect()
-        let left = rect.left
-        let bottom = window.innerHeight - rect.bottom
-        if (bottom <= 0) placement[0] = 'top'
-        if (left <= 0) placement[1] = 'left'
-        this.popoverPlace = placement.join('-')
+      const id = computed(() => {
+        return (
+          '_' +
+          Math.random()
+            .toString(36)
+            .substr(2, 9)
+        )
       })
-    }
-  },
-  install(Vue, options) {
-    let component = this
-    options = Vue.util.extend(
-      {
-        name: 'data-picker',
-        props: {}
-      },
-      options
-    )
+      const currentStep = computed(() => state.steps[state.step])
+      const selectedDate = computed(() => {
+        let dates = state.selectedDates
+        return dates.length ? dates[dates.length - 1] : state.date
+      })
+      const formattedDate = computed(() => {
+        let format = ''
 
-    for (let k in options.props) {
-      if (component.props.hasOwnProperty(k)) {
-        component.props[k].default = options.props[k]
+        if (hasStep('y')) format = 'jYYYY'
+        if (hasStep('m')) format += ' jMMMM '
+        if (hasStep('d')) {
+          format = !isDataArray ? 'jD jMMMM jYYYY' : 'ddd jD jMMMM'
+        }
+        if (hasStep('t')) format += ' HH:mm '
+        if (!format) return ''
+
+        let separator = props.multiple ? ' | ' : ' ~ '
+        return state.selectedDates.map(d => d.xFormat(format)).join(separator)
+      })
+      const month = computed(() => {
+        let moment = state.core.moment
+        if (!hasStep('d')) return []
+        let min = state.minDate ? state.minDate.clone().startOf('day') : -Infinity
+        let max = state.maxDate ? state.maxDate.clone().endOf('day') : Infinity
+        return state.core.getWeekArray(state.date.clone()).map(weekItem => {
+          return weekItem.map(day => {
+            let data = {
+              date: day,
+              formatted: '',
+              selected: false,
+              disabled: false,
+              attributes: {}
+            }
+            if (!day) return data
+            let dayMoment = state.core.moment(day)
+            data.formatted = dayMoment.xDate()
+            data.selected = state.selectedDates.find(item => isSameDay(item, day))
+            data.disabled =
+              (state.minDate && dayMoment.clone().startOf('day') < min) ||
+              (state.maxDate && dayMoment.clone().endOf('day') > max) ||
+              checkDisable('d', dayMoment)
+            if (props.range && !data.disabled) {
+              let [start, end] = state.selectedDates
+              data.isFirst = data.selected && start && isSameDay(start, day)
+              data.isLast = data.selected && end && isSameDay(end, day)
+              data.isBetween =
+                !data.selected && start && end && day > start && day < end
+            }
+            data.attributes = getHighlights('d', dayMoment)
+            return data
+          })
+        })
+      })
+      const monthDays = computed(() => {
+        if (!props.range || state.selectedDates.length !== 1 || !state.hoveredItem)
+          return month.value
+        let dates = [state.hoveredItem, state.selectedDates[0]]
+        dates.sort((a, b) => a - b)
+        let [start, end] = dates
+        return month.value.map(weekItem => {
+          return weekItem.map(data => {
+            if (!data.date) return data
+            if (props.range && !data.disabled) {
+              let day = data.date
+              data.isHover = !data.selected && day > start && day < end
+            }
+            return data
+          })
+        })
+      })
+      const years = computed(() => {
+        if (!hasStep('y') && currentStep.value !== 'y') return []
+        let moment = state.core.moment
+        if (typeof state.maxDate !== 'boolean') state.maxDate = false
+        if (typeof state.minDate !== 'boolean') state.minDate = false
+        let min = state.minDate ? state.minDate : moment('1300', 'jYYYY')
+        let max = state.maxDate ? state.maxDate : min.clone().add(150, 'year')
+        let cy = state.date.xYear()
+        return state.core
+          .getYearsList(min.xYear(), max.xYear())
+          .reverse()
+          .map(item => {
+            let year = moment().xYear(item)
+            year.selected = cy === item
+            year.disabled = checkDisable('y', item)
+            year.attributes = getHighlights('y', item)
+            return year
+          })
+      })
+      const months = computed(() => {
+        if (hasStep('m')) {
+          let date = state.date.clone().xStartOf('month')
+          let months = state.core.getMonthsList(state.minDate, state.maxDate, date)
+          months.forEach(m => {
+            m.selected = state.date.xMonth() === m.xMonth()
+            m.disabled = m.disabled || checkDisable('m', m)
+            m.attributes = getHighlights('m', m)
+          })
+          return months
+        }
+        return []
+      })
+      const prevMonthDisabled = computed(() => {
+        return (
+          hasStep('d') &&
+          state.minDate &&
+          state.minDate.clone().xStartOf('month') >=
+          state.date.clone().xStartOf('month')
+        )
+      })
+      const nextMonthDisabled = computed(() => {
+        return (
+          hasStep('d') &&
+          state.maxDate &&
+          state.maxDate.clone().xStartOf('month') <=
+          state.date.clone().xStartOf('month')
+        )
+      })
+      const canGoToday = computed(() => {
+        if (!state.minDate && !state.maxDate) return true
+        let now = state.now,
+          min = state.minDate && state.minDate <= now,
+          max = state.maxDate && now <= state.maxDate
+
+        if (props.type === 'time') {
+          if (state.minDate) {
+            min = now
+              .clone()
+              .hour(state.minDate.hour())
+              .minute(state.minDate.minute())
+            min = min <= now
+          }
+          if (state.maxDate) {
+            max = state.now
+              .clone()
+              .hour(state.maxDate.hour())
+              .minute(state.maxDate.minute())
+            max = now <= max
+          }
+        }
+        if (state.minDate && state.maxDate) return min && max
+        if (state.minDate) return min
+        if (state.maxDate) return max
+        return false
+      })
+      const altFormatted = computed(() => {
+        let format = props.altFormat
+        if (format === '' || format === undefined) {
+          switch (props.type) {
+            case 'time':
+              format = 'HH:mm:ss [GMT]ZZ'
+              break
+            case 'datetime':
+              format = 'YYYY-MM-DD HH:mm:ss [GMT]ZZ'
+              break
+            case 'date':
+              format = 'YYYY-MM-DD'
+              break
+            case 'year':
+              format = 'YYYY'
+              break
+            case 'month':
+              format = 'MM'
+              break
+            case 'year-month':
+              format = 'YYYY-MM'
+              break
+          }
+        }
+        return state.output.map(d => d.format(format)).join(' ~ ')
+      })
+      const selfFormat = computed(() => {
+        let format = props.format
+        if (['', undefined, 'date'].indexOf(format) !== -1) {
+          switch (props.type) {
+            case 'time':
+              format = 'HH:mm'
+              break
+            case 'datetime':
+              format = 'jYYYY/jMM/jDD HH:mm'
+              break
+            case 'date':
+              format = 'jYYYY/jMM/jDD'
+              break
+            case 'year':
+              format = 'jYYYY'
+              break
+            case 'month':
+              format = 'jMM'
+              break
+            case 'year-month':
+              format = 'jYYYY/jMM'
+              break
+          }
+        }
+        return format
+      })
+      const selfInputFormat = computed(() => {
+        return props.inputFormat === '' || props.inputFormat === undefined
+          ? selfFormat
+          : props.inputFormat
+      })
+      const outputValue = computed(() => {
+        let output = cloneDates(state.output)
+        let format = selfFormat.value
+        let isDate = props.modelValue instanceof Date || props.format === 'date'
+        return output.map(item => {
+          ;/j\w/.test(format) && item.locale('fa')
+          setTimezone(item, 'out')
+          return isDate ? item.toDate() : item.format(format)
+        })
+      })
+      const selfDisplayFormat = computed(() => {
+        let format = props.displayFormat || selfFormat.value
+        let localeFormat = state.localeData.config.displayFormat
+        if (localeFormat) {
+          return typeof localeFormat === 'function'
+            ? localeFormat(this)
+            : localeFormat
+        }
+        if (state.localeData.name !== 'fa') {
+          format = format.replace(/j/g, '')
+        }
+        return format
+      })
+      const displayValue = computed(() => {
+        let format = selfDisplayFormat
+        return state.output
+          .map(item => {
+            let output = item.clone()
+            ;/j\w/.test(format.value) && output.locale('fa')
+            return convertToLocaleNumber(output.format(format.value))
+          })
+          .join(' ~ ')
+      })
+      const isDisableTime = computed(() => hasStep('t') && checkDisable('t', state.time))
+      const timeAttributes = computed(() => hasStep('t') ? getHighlights('t', state.time) : {})
+      const canSubmit = computed(() => {
+        if (!props.disable) return true
+        let can = true
+        if (hasStep('t')) can = !isDisableTime
+        if (can && props.type !== 'time') can = !checkDisable('d', state.date)
+        return can
+      })
+      const weekDays = computed(() => {
+        let names = JSON.parse(
+          JSON.stringify(
+            state.core
+              .moment()
+              .localeData()
+              .weekdaysMin()
+          )
+        )
+        let dow = state.core.locale.config.dow
+        while (dow > 0) {
+          names.push(names.shift())
+          dow--
+        }
+        return names
+      })
+      const lang = computed(() => state.localeData.config.lang)
+      const isPopover = computed(() => (props.popover === '' || props.popover) && state.windowWidth > 480)
+      const isDataArray = computed(() => props.range || props.multiple)
+
+      state.updateNowInterval = setInterval(() => {
+        state.now = state.core.moment()
+      }, 1000)
+
+      onMounted(() => {
+        state.date = state.core.moment()
+        state.time = state.core.moment()
+        state.selectedDates.push(state.now)
+        nextTick(() => {
+          let addEvent = (el, type, handler) => {
+            if (el.attachEvent) el.attachEvent('on' + type, handler)
+            else el.addEventListener(type, handler)
+          }
+          let live = (selector, event, callback, context) => {
+            addEvent(context || document, event, function (e) {
+              let found,
+                el = e.target || e.srcElement
+              while (el && !(found = el.id === selector)) el = el.parentElement
+              if (found) callback.call(el, e)
+            })
+          }
+          if (props.element && !props.editable) {
+            live(props.element, 'click', focus)
+          }
+        })
+        document.body.addEventListener('keydown', e => {
+          e = e || event
+          let code = e.keyCode
+          if ((code === 9 || code === 27) && state.visible) state.visible = false
+        })
+        window.addEventListener('resize', onWindowResize, true)
+        window.addEventListener('mousedown', onWindowClick, true)
+      })
+
+      onBeforeUnmount(() => {
+        window.clearInterval(state.updateNowInterval)
+        window.removeEventListener('resize', onWindowResize, true)
+        window.removeEventListener('mousedown', onWindowClick, true)
+        let picker = picker
+        if (props.appendTo && picker && picker.$el && picker.$el.parentNode) {
+          picker.$el.parentNode.removeChild(picker.$el)
+        }
+      })
+
+      watchEffect(() => setType())
+      watchEffect(() => selectedDate)
+      watch(() => props.view, () => setView())
+      watch([() => props.modelValue, () => props.initialValue, () => props.timezone], () => updateDates())
+      watch(() => props.inline, (val) => {
+        if (!props.disabled) state.visible = !!val
+      })
+      watch(() => props.disabled, (val) => {
+        if (val) state.visible = false
+        else if (props.inline) state.visible = true
+      })
+      watch(selectedDate, (val, oldVal) => {
+        setDirection(state.directionClass, val, oldVal)
+      })
+      watch(() => state.date, (val, oldVal) => {
+        state.directionClassDate = setDirection(state.directionClassDate, val, oldVal)
+        if (isLower(state.date)) state.date = state.minDate.clone()
+        if (isMore(state.date)) state.date = state.maxDate.clone()
+      })
+      watch(() => state.time, (val, oldVal) => {
+        if (hasStep('t') && props.roundMinute) {
+          let time = state.time.clone()
+          let jm = props.jumpMinute
+          let m = (jm - (time.minute() % jm)) % jm
+          time.add({m})
+          if (time.valueOf() !== state.time.valueOf()) {
+            state.time = time
+            // @todo: this line should apply time to current date selection,
+            // not all of them
+            state.selectedDates.forEach(d => d.set({m: time.minute()}))
+          }
+        }
+        if (oldVal) setDirection('directionClassTime', val, oldVal)
+      })
+      watch(() => state.visible, function (val) {
+        if (val) {
+          if (props.disabled) return (state.visible = false)
+          if (props.type === 'datetime' && props.view === 'day') goStep('d')
+          if (props.view !== 'day') goStep(state.shortCodes[props.view] || 'd')
+          nextTick(() => {
+            if (props.appendTo) {
+              try {
+                let container = document.querySelector(props.appendTo)
+                container.appendChild(picker.value)
+              } catch (er) {
+                // eslint-disable-next-line
+                console.warn(`Cannot append picker to "${props.appendTo}"!`)
+              }
+            }
+          })
+          checkScroll()
+          setPlacement()
+          emit('open', this)
+        } else {
+          if (props.inline && !props.disabled) return (state.visible = true)
+          emit('close', this)
+        }
+      })
+      watch(() => props.show, (val) => {
+        state.visible = val
+      })
+      watchEffect(() => {
+        const locale = props.locale
+        const locales = locale.toString().split(',')
+        state.locales = locales.length ? locales : ['fa']
+        // if (state.core.locale.name !== state.locales[0]) setLocale(state.locales[0])
+      })
+      watchEffect(() => {
+        const config = props.localeConfig
+        state.core.setLocalesConfig(config)
+        setLocale(state.localeData.name)
+      })
+      watch(() => state.localeData.name, () => {
+        emit('localeChange', state.localeData)
+        setMinMax()
+      })
+
+      return {
+        picker,
+        inputGroup,
+        input,
+        container,
+        year, time, monthEl,
+        state,
+        nextStep,
+        goStep,
+        checkScroll,
+        alignPosition,
+        fastUpdateCounter,
+        nextMonth,
+        prevMonth,
+        selectDay,
+        selectYear,
+        selectMonth,
+        setTime,
+        wheelSetTime,
+        submit,
+        updateDates,
+        goToday,
+        setType,
+        setView,
+        setDirection,
+        setMinMax,
+        getMoment,
+        focus,
+        hasStep,
+        setOutput,
+        wrapperClick,
+        applyDevFn,
+        checkDisable,
+        getHighlights,
+        isLower,
+        isMore,
+        clearValue,
+        setLocale,
+        setTimezone,
+        convertToLocaleNumber,
+        onWindowResize,
+        onWindowClick,
+        setPlacement,
+        id,
+        currentStep,
+        selectedDate,
+        formattedDate,
+        month,
+        monthDays,
+        years,
+        months,
+        prevMonthDisabled,
+        nextMonthDisabled,
+        canGoToday,
+        altFormatted,
+        selfFormat,
+        selfInputFormat,
+        outputValue,
+        selfDisplayFormat,
+        displayValue,
+        isDisableTime,
+        timeAttributes,
+        canSubmit,
+        weekDays,
+        lang,
+        isPopover,
+        isDataArray
       }
     }
-    Vue.component(options.name, component)
   }
-}
 </script>

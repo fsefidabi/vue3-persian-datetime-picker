@@ -6,32 +6,28 @@
 
     <card title="Multiple select" version="2.6.0">
       <date-picker
-        v-model="dates"
         multiple
         clearable
         format="YYYY-MM-DD"
-        display-format="jMMMM jD"
+        display-format="jMMMM jDD"
+        @input="codeOutput"
       />
       <br />
-      <code class="code">{{ dates }}</code>
-      <template slot="code">
+      <code class="code" v-if="output">{{ output.value }}</code>
+      <template v-slot:code>
         <!-- eslint-disable -->
-        <highlight-code lang="html">
-          &lt;date-picker
-            v-model="dates"
-            multiple
-            clearable
-            format="YYYY-MM-DD"
-            display-format="jMMMM jD"
-          /&gt;
-        </highlight-code>
-        <highlight-code lang="javascript">
-          data() {
-            return {
-              dates: []
-            }
-          }
-        </highlight-code>
+        <pre v-highlightjs><code class="html" v-pre>&lt;date-picker
+  v-model="dates"
+  multiple
+  clearable
+  format="YYYY-MM-DD"
+  display-format="jMMMM jD"
+/&gt;</code></pre>
+        <pre v-highlightjs><code class="javascript" v-pre>data() {
+  return {
+    dates: []
+  }
+} </code></pre>
         <!-- eslint-enable -->
       </template>
     </card>
@@ -39,10 +35,19 @@
 </template>
 
 <script>
+import { ref } from 'vue';
+
 export default {
-  data() {
+  setup() {
+    const dates = ref('')
+    const output = ref([])
+    const codeOutput = function (val) {
+      output.value = val
+    }
     return {
-      dates: []
+      dates,
+      output,
+      codeOutput
     }
   }
 }

@@ -1,29 +1,27 @@
 <template>
   <card title="Different input and output values">
     <date-picker
-      value="2017-05-10"
+      value="date"
       input-format="YYYY-MM-DD"
       format="jYYYY/jMM/jDD"
-      @input="date = $event"
+      @input="codeOutput"
     />
-    <code class="code">{{ date }}</code>
+    <code class="code" v-if="output">{{ date }}</code>
 
-    <template slot="code">
+    <template v-slot:code>
       <!-- eslint-disable -->
-      <highlight-code lang="html" v-pre>
-        &lt;date-picker
-          value="2017-05-10"
-          input-format="YYYY-MM-DD"
-          format="jYYYY/jMM/jDD"
-          @input="date=$event"
-        /&gt;
-      </highlight-code>
+      <pre v-highlightjs><code class="html" v-pre>&lt;date-picker
+  value="2017-05-10"
+  input-format="YYYY-MM-DD"
+  format="jYYYY/jMM/jDD"
+  @input="date=$event"
+/&gt;</code></pre>
       <!-- eslint-enable -->
     </template>
 
-    <template slot="docs">
+    <template v-slot:docs>
       <!-- eslint-disable -->
-      <highlight-code :lang="'javascript'">
+      <pre v-highlightjs><code class="javascript" v-pre>
         /**
         * Different input and output format
         * 1_ set input by          value="..."
@@ -34,8 +32,8 @@
         "$event"
         type: String
         returns formatted datetime
-      </highlight-code>
-      <highlight-code lang="html" v-pre>
+      </code></pre>
+      <pre v-highlightjs><code class="html" v-pre>
         &lt;date-picker
           value="2017/10/03"
           input-format="YYYY/MM/DD"
@@ -48,17 +46,27 @@
           format="YYYY/MM/jDD"
           @input="date=$event"
         /&gt;
-      </highlight-code>
+      </code></pre>
       <!-- eslint-enable -->
     </template>
   </card>
 </template>
 
 <script>
+import { ref } from "vue";
+
 export default {
-  data() {
-    return {
-      date: ''
+  setup(){
+    const date = '2017-05-10'
+    const output = ref(null)
+    const codeOutput = function (val) {
+      output.value = val
+    }
+
+    return{
+      date,
+      output,
+      codeOutput
     }
   }
 }
