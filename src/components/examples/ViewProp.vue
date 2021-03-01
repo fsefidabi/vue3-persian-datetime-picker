@@ -6,7 +6,7 @@
       view="year"
       @input="codeOutput"
     />
-    <code class="code" v-if="output">{{ output.value[0] }}</code>
+    <code v-if="output" class="code">{{ output.value[0] }}</code>
 
     <template v-slot:code>
       <!-- eslint-disable -->
@@ -36,21 +36,21 @@ example: year | month | day | time</code></pre>
 </template>
 
 <script>
-import { ref } from "vue";
+import {ref} from 'vue'
 
-  export default {
-    setup(){
-      const date = ref(null)
-      const output = ref(null)
-      const codeOutput = function (val) {
-        output.value = val
-      }
-
-      return{
-        date,
-        output,
-        codeOutput
-      }
+export default {
+  setup() {
+    const date = ref(null)
+    const output = ref(null)
+    const codeOutput = function (val) {
+      output.value = val
     }
-  }
+
+    return {
+      date,
+      output,
+      codeOutput,
+    }
+  },
+}
 </script>

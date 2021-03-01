@@ -1,13 +1,13 @@
 let toString = Object.prototype.toString,
   hasOwnProperty = Object.prototype.hasOwnProperty
 const tools = {
-  isFunction: function(obj) {
+  isFunction: function (obj) {
     return toString.call(obj) === '[object Function]'
   },
-  isArray: function(obj) {
+  isArray: function (obj) {
     return toString.call(obj) === '[object Array]'
   },
-  isPlainObject: function(obj) {
+  isPlainObject: function (obj) {
     // Must be an Object.
     // Because of IE, we also have to check the presence of the constructor property.
     // Make sure that DOM nodes and window objects don't pass through, as well
@@ -36,14 +36,14 @@ const tools = {
     for (key in obj);
 
     return key === undefined || hasOwnProperty.call(obj, key)
-  }
+  },
 }
 
 /*
  * jQuery extend function
  * https://gist.github.com/bentsai/3150936
  */
-const extend = function() {
+const extend = function () {
   var options,
     name,
     src,
@@ -120,7 +120,7 @@ const extend = function() {
  * @param arr Array
  * @returns Array
  */
-export const cloneDates = arr => arr.map(d => d.clone())
+export const cloneDates = (arr) => arr.map((d) => d.clone())
 
 /**
  * Check if two dates are on the same day
@@ -129,7 +129,7 @@ export const cloneDates = arr => arr.map(d => d.clone())
  * @returns {boolean}
  */
 export const isSameDay = (a, b) => {
-  a = a.clone().set({ h: 12, m: 0 })
+  a = a.clone().set({h: 12, m: 0})
   return Math.abs(a.diff(b, 'hours')) < 20
 }
 
@@ -138,6 +138,6 @@ export const isSameDay = (a, b) => {
  * @param obj
  * @returns {any}
  */
-const clone = obj => JSON.parse(JSON.stringify(obj))
+const clone = (obj) => JSON.parse(JSON.stringify(obj))
 
-export default { extend, clone }
+export default {extend, clone}

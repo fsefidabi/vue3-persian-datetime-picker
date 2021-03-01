@@ -56,8 +56,8 @@ export default {
   data() {
     return {
       datetime: '',
-      datetime2: ''
+      datetime2: '',
     }
-  }
+  },
 }
 </script>

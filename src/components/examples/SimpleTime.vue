@@ -45,8 +45,8 @@
 export default {
   data() {
     return {
-      time: ''
+      time: '',
     }
-  }
+  },
 }
 </script>

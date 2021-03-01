@@ -107,6 +107,6 @@
 
 <script>
 export default {
-  name: 'Slots'
+  name: 'Slots',
 }
 </script>

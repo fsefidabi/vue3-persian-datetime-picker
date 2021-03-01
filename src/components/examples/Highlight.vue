@@ -179,13 +179,13 @@ export default {
         m: 'Month',
         d: 'Date',
         t: 'Time',
-        dt: 'DateTime'
-      }
+        dt: 'DateTime',
+      },
     }
   },
   methods: {
     highlightDay(formatted, dateMoment, checkingFor) {
-      let attributes = { title: 'Today is ' + formatted }
+      let attributes = {title: 'Today is ' + formatted}
       if (checkingFor === 'day' && formatted === '1397/12/28') {
         attributes['class'] = 'highlighted-1'
         attributes['title'] = 'جشن چهارشنبه سوری'
@@ -199,35 +199,35 @@ export default {
     highlightYear(formatted, dateMoment, checkingFor) {
       if (checkingFor === 'year' && formatted === '1396')
         return {
-          style: { color: 'red !important' },
+          style: {color: 'red !important'},
           class: 'highlighted',
-          'data-info': '1396'
+          'data-info': '1396',
         }
       return {}
     },
     highlightMonth(formatted) {
       if (formatted === '05')
         return {
-          style: { color: 'red !important' },
-          class: 'highlighted'
+          style: {color: 'red !important'},
+          class: 'highlighted',
         }
       return {}
     },
     highlightTime(formatted, dateMoment) {
       if (dateMoment.hour() === dateMoment.minutes())
         return {
-          style: { color: '#00BCD4 !important' }
+          style: {color: '#00BCD4 !important'},
         }
       return {}
     },
     highlightDatetime(formatted, dateMoment, checkingFor) {
       if (checkingFor === 'time' && dateMoment.format('HH:mm') === '22:00')
-        return { style: { color: '#ff9800 !important' } }
+        return {style: {color: '#ff9800 !important'}}
       else if (checkingFor === 'day' && dateMoment.jDate() === 5)
-        return { class: 'highlighted-1' }
+        return {class: 'highlighted-1'}
       return {}
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss">

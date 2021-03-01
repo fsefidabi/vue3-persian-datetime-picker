@@ -20,7 +20,9 @@
       </div>
 
       <template v-slot:code>
-        <pre v-highlightjs><code class="html" v-pre>&lt;date-picker :disabled="{{ disabled }}" /&gt;</code></pre>
+        <pre
+          v-highlightjs
+        ><code v-pre class="html">&lt;date-picker :disabled="{{ disabled }}" /&gt;</code></pre>
       </template>
     </card>
 
@@ -310,9 +312,9 @@ export default {
         m: 'Month',
         d: 'Date',
         t: 'Time',
-        dt: 'DateTime'
+        dt: 'DateTime',
       },
-      disabled: true
+      disabled: true,
     }
   },
   methods: {
@@ -322,7 +324,7 @@ export default {
         dateMoment.jMonth() === 4 || // means "mordad"
         dateMoment.locale('en').format('dddd') === 'Friday'
       )
-    }
-  }
+    },
+  },
 }
 </script>

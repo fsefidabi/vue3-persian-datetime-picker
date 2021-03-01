@@ -6,12 +6,12 @@ import fa from './moment.locale.fa'
 import utils from './utils'
 
 moment.updateLocale('en', {
-  weekdaysMin: 'S_M_T_W_T_F_S'.split('_')
+  weekdaysMin: 'S_M_T_W_T_F_S'.split('_'),
 })
 moment.updateLocale('fa', fa)
-moment.loadPersian({ dialect: 'persian-modern' })
-moment.daysInMonth = function(year, month) {
-  return moment({ year, month }).daysInMonth()
+moment.loadPersian({dialect: 'persian-modern'})
+moment.daysInMonth = function (year, month) {
+  return moment({year, month}).daysInMonth()
 }
 
 //=====================================
@@ -23,15 +23,15 @@ const localMethods = {
     year: 'jYear',
     month: 'jMonth',
     date: 'jDate',
-    day: 'day'
+    day: 'day',
   },
   en: {
     daysInMonth: 'daysInMonth',
     year: 'year',
     month: 'month',
     date: 'date',
-    day: 'day'
-  }
+    day: 'day',
+  },
 }
 const localesConfig = {
   fa: {
@@ -44,8 +44,8 @@ const localesConfig = {
       cancel: 'انصراف',
       now: 'اکنون',
       nextMonth: 'ماه بعد',
-      prevMonth: 'ماه قبل'
-    }
+      prevMonth: 'ماه قبل',
+    },
   },
   en: {
     dow: 0,
@@ -57,23 +57,23 @@ const localesConfig = {
       cancel: 'Cancel',
       now: 'Now',
       nextMonth: 'Next month',
-      prevMonth: 'Previous month'
-    }
-  }
+      prevMonth: 'Previous month',
+    },
+  },
 }
 
-const CoreModule = function(defaultLocaleName, defaultOptions) {
+const CoreModule = function (defaultLocaleName, defaultOptions) {
   'use strict'
 
   const Instance = {
     moment: moment,
-    locale: { name: 'fa', config: {} },
+    locale: {name: 'fa', config: {}},
     localesConfig: {},
     setLocalesConfig: null,
     changeLocale: null,
     getWeekArray: null,
     getYearsList: null,
-    getMonthsList: null
+    getMonthsList: null,
   }
 
   //=====================================
@@ -100,7 +100,7 @@ const CoreModule = function(defaultLocaleName, defaultOptions) {
     function addMethods(date) {
       if (date === undefined) return
 
-      const nameInLocale = name => {
+      const nameInLocale = (name) => {
         if (locale.name !== 'fa') name = name.replace(/j/g, '')
         return name
       }
@@ -109,24 +109,24 @@ const CoreModule = function(defaultLocaleName, defaultOptions) {
       date.xMonth = moment.fn[methods.month]
       date.xDate = moment.fn[methods.date]
 
-      date.xFormat = function(format) {
+      date.xFormat = function (format) {
         return this.format(nameInLocale(format))
       }
-      date.xStartOf = function(value) {
+      date.xStartOf = function (value) {
         return this.startOf(methods[value])
       }
-      date.xEndOf = function(value) {
+      date.xEndOf = function (value) {
         return this.endOf(methods[value])
       }
-      date.xAdd = function(amount, key) {
+      date.xAdd = function (amount, key) {
         return this.add(amount, methods[key])
       }
-      date.clone = function() {
+      date.clone = function () {
         return Instance.moment(this.toDate())
       }
     }
 
-    this.moment = function() {
+    this.moment = function () {
       let date = moment.apply(null, arguments)
       date.locale(locale.name)
       addMethods(date)
@@ -134,7 +134,7 @@ const CoreModule = function(defaultLocaleName, defaultOptions) {
     }
   }
 
-  Instance.setLocalesConfig = function(config) {
+  Instance.setLocalesConfig = function (config) {
     let defaults = utils.clone(localesConfig)
     for (let key in config) {
       if (config.hasOwnProperty(key) && defaults[key] === undefined)
@@ -142,7 +142,7 @@ const CoreModule = function(defaultLocaleName, defaultOptions) {
           true,
           {},
           utils.clone(defaults.en),
-          { lang: { label: key } },
+          {lang: {label: key}},
           config[key]
         )
     }
@@ -160,7 +160,7 @@ const CoreModule = function(defaultLocaleName, defaultOptions) {
       weekArray.push(week)
     }
 
-    date.set({ h: 12, m: 0 })
+    date.set({h: 12, m: 0})
     let daysInMonth = xDaysInMonth(date.xYear(), date.xMonth())
     let day = date.clone().xDate(1)
     let dayArray = [day.toDate()]
@@ -172,7 +172,7 @@ const CoreModule = function(defaultLocaleName, defaultOptions) {
     let weekArray = []
     let week = []
 
-    dayArray.forEach(day => {
+    dayArray.forEach((day) => {
       if (week.length > 0 && day.getDay() === this.locale.config.dow) {
         addWeek(weekArray, week)
         week = []
@@ -224,4 +224,4 @@ const CoreModule = function(defaultLocaleName, defaultOptions) {
 
 export default CoreModule
 
-export { localesConfig }
+export {localesConfig}

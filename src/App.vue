@@ -1,6 +1,9 @@
 <template>
-  <div id="app" :class="{ 'sidebar-open': sidebarOpen.value }">
-    <router-view name="header" @toggleSidebar="sidebarOpen.value = !sidebarOpen.value" />
+  <div id="app" :class="{'sidebar-open': sidebarOpen.value}">
+    <router-view
+      name="header"
+      @toggleSidebar="sidebarOpen.value = !sidebarOpen.value"
+    />
     <router-view name="sidebar" />
     <div class="main-content">
       <div class="container">
@@ -11,23 +14,23 @@
 </template>
 
 <script>
-  import { ref, watch } from 'vue'
-  import { useRoute } from 'vue-router'
-  import Header from './components/includes/Header'
-  import Sidebar from './components/includes/Sidebar'
+import {ref, watch} from 'vue'
+import {useRoute} from 'vue-router'
 
-  export default {
-    name: 'App',
-    components: { Sidebar, Header },
-    setup () {
-      const route = useRoute()
-      const sidebarOpen = ref(false)
+export default {
+  name: 'App',
+  setup() {
+    const route = useRoute()
+    const sidebarOpen = ref(false)
 
-      watch(() => route, () => sidebarOpen.value = false)
+    watch(
+      () => route,
+      () => (sidebarOpen.value = false)
+    )
 
-      return {
-        sidebarOpen
-      }
+    return {
+      sidebarOpen,
     }
-  }
+  },
+}
 </script>

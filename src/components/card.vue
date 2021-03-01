@@ -26,23 +26,23 @@
 </template>
 
 <script>
-  import { reactive } from 'vue'
+import {reactive} from 'vue'
 
 export default {
   props: {
-    title: { type: String, default: '' },
-    version: { type: String, default: '' },
-    codeColClass: { type: String, default: 'col-md-6' },
-    sampleColClass: { type: String, default: 'col-md-6' }
+    title: {type: String, default: ''},
+    version: {type: String, default: ''},
+    codeColClass: {type: String, default: 'col-md-6'},
+    sampleColClass: {type: String, default: 'col-md-6'},
   },
-  setup(props, { slots }) {
+  setup() {
     const state = reactive({
-      showDocs: false
+      showDocs: false,
     })
 
     return {
-      state
+      state,
     }
-  }
+  },
 }
 </script>

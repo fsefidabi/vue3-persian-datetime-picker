@@ -10,7 +10,7 @@
       type="text"
       class="form-control is-editable"
       placeholder="YYYY/MM/DD"
-      style="max-width:250px;display: inline-block"
+      style="max-width: 250px; display: inline-block"
     />
 
     <date-picker
@@ -69,8 +69,8 @@ export default {
   data() {
     return {
       date: '',
-      show: false
+      show: false,
     }
-  }
+  },
 }
 </script>

@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import Header from './components/includes/Header'
 import Sidebar from './components/includes/Sidebar'
 import InstallDocs from './components/InstallDocs.vue'
@@ -34,298 +34,298 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    meta: { pageTitle: 'Home' },
+    meta: {pageTitle: 'Home'},
     components: {
       default: SimpleDate,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/installation',
     name: 'installation',
-    meta: { pageTitle: 'Installation' },
+    meta: {pageTitle: 'Installation'},
     components: {
       default: InstallDocs,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/formatting',
     name: 'formatting',
-    meta: { pageTitle: 'Formatting' },
+    meta: {pageTitle: 'Formatting'},
     components: {
       default: SimpleFormat,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/min-max',
     name: 'min-max',
-    meta: { pageTitle: 'Min and Max' },
+    meta: {pageTitle: 'Min and Max'},
     components: {
       default: MinAndMax,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/initial-value',
     name: 'initial-value',
-    meta: { pageTitle: 'Initial value' },
+    meta: {pageTitle: 'Initial value'},
     components: {
       default: WithValue,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/different-input-output',
     name: 'different-input-output',
-    meta: { pageTitle: 'Different input-output' },
+    meta: {pageTitle: 'Different input-output'},
     components: {
       default: DifferentInputAnOutput,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/view',
     name: 'view',
-    meta: { pageTitle: 'View at startup' },
+    meta: {pageTitle: 'View at startup'},
     components: {
       default: ViewProp,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/range',
     name: 'range',
-    meta: { pageTitle: 'Range Select' },
+    meta: {pageTitle: 'Range Select'},
     components: {
       default: Range,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/multiple',
     name: 'multiple',
-    meta: { pageTitle: 'Multiple Select' },
+    meta: {pageTitle: 'Multiple Select'},
     components: {
       default: Multiple,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/editable',
     name: 'editable',
-    meta: { pageTitle: 'Editable' },
+    meta: {pageTitle: 'Editable'},
     components: {
       default: EditableInput,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/custom-input',
     name: 'custom-input',
-    meta: { pageTitle: 'Custom input' },
+    meta: {pageTitle: 'Custom input'},
     components: {
       default: CustomInput,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/custom-editable-input',
     name: 'custom-editable-input',
-    meta: { pageTitle: 'Custom editable input' },
+    meta: {pageTitle: 'Custom editable input'},
     components: {
       default: CustomInputAndEditable,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/input-settings',
     name: 'input-settings',
-    meta: { pageTitle: 'Input settings' },
+    meta: {pageTitle: 'Input settings'},
     components: {
       default: InputSettings,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/alt-field',
     name: 'alt-field',
-    meta: { pageTitle: 'Alt field' },
+    meta: {pageTitle: 'Alt field'},
     components: {
       default: AltField,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/auto-submit',
     name: 'auto-submit',
-    meta: { pageTitle: 'Auto submit' },
+    meta: {pageTitle: 'Auto submit'},
     components: {
       default: AutoSubmit,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/theme',
     name: 'theme',
-    meta: { pageTitle: 'Theme' },
+    meta: {pageTitle: 'Theme'},
     components: {
       default: PickerColor,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/append-to',
     name: 'append-to',
-    meta: { pageTitle: 'Append to container' },
+    meta: {pageTitle: 'Append to container'},
     components: {
       default: AppendTo,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/disabling',
     name: 'disabling',
-    meta: { pageTitle: 'Disabling' },
+    meta: {pageTitle: 'Disabling'},
     components: {
       default: DisableDates,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/label',
     name: 'label',
-    meta: { pageTitle: 'Picker label' },
+    meta: {pageTitle: 'Picker label'},
     components: {
       default: WithLabel,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/highlight',
     name: 'highlight',
-    meta: { pageTitle: 'Highlighting' },
+    meta: {pageTitle: 'Highlighting'},
     components: {
       default: Highlight,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/locale',
     name: 'locale',
-    meta: { pageTitle: 'Localization' },
+    meta: {pageTitle: 'Localization'},
     components: {
       default: Localization,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/timezone',
     name: 'timezone',
-    meta: { pageTitle: 'Timezone' },
+    meta: {pageTitle: 'Timezone'},
     components: {
       default: Timezone,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/datetime-picker',
     name: 'datetime-picker',
-    meta: { pageTitle: 'Datetime picker' },
+    meta: {pageTitle: 'Datetime picker'},
     components: {
       default: SimpleDatetime,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/time-picker',
     name: 'time-picker',
-    meta: { pageTitle: 'Time picker' },
+    meta: {pageTitle: 'Time picker'},
     components: {
       default: SimpleTime,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/popover',
     name: 'popover',
-    meta: { pageTitle: 'Popover' },
+    meta: {pageTitle: 'Popover'},
     components: {
       default: Popover,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/slots',
     name: 'slots',
-    meta: { pageTitle: 'Slots' },
+    meta: {pageTitle: 'Slots'},
     components: {
       default: Slots,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/events',
     name: 'events',
-    meta: { pageTitle: 'Events' },
+    meta: {pageTitle: 'Events'},
     components: {
       default: EventsDocs,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/props',
     name: 'props',
-    meta: { pageTitle: 'Props' },
+    meta: {pageTitle: 'Props'},
     components: {
       default: PropsDocs,
       header: Header,
-      sidebar: Sidebar
-    }
+      sidebar: Sidebar,
+    },
   },
   {
     path: '/:pathMatch(.*)*',
     name: '404',
-    meta: { pageTitle: 'Home', showInMenu: false },
+    meta: {pageTitle: 'Home', showInMenu: false},
     components: {
       default: SimpleDate,
       header: Header,
-      sidebar: Sidebar
-    }
-  }
+      sidebar: Sidebar,
+    },
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes: routes
+  routes: routes,
 })
 router.beforeEach((to, from, next) => {
   if (to.meta && to.meta.pageTitle) {
@@ -334,4 +334,4 @@ router.beforeEach((to, from, next) => {
   next()
 })
 
-export { router, routes }
+export {router, routes}

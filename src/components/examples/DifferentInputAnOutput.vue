@@ -6,7 +6,7 @@
       format="jYYYY/jMM/jDD"
       @input="codeOutput"
     />
-    <code class="code" v-if="output">{{ date }}</code>
+    <code v-if="output" class="code">{{ date }}</code>
 
     <template v-slot:code>
       <!-- eslint-disable -->
@@ -53,21 +53,21 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import {ref} from 'vue'
 
 export default {
-  setup(){
+  setup() {
     const date = '2017-05-10'
     const output = ref(null)
     const codeOutput = function (val) {
       output.value = val
     }
 
-    return{
+    return {
       date,
       output,
-      codeOutput
+      codeOutput,
     }
-  }
+  },
 }
 </script>

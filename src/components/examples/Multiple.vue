@@ -13,7 +13,7 @@
         @input="codeOutput"
       />
       <br />
-      <code class="code" v-if="output">{{ output.value }}</code>
+      <code v-if="output" class="code">{{ output.value }}</code>
       <template v-slot:code>
         <!-- eslint-disable -->
         <pre v-highlightjs><code class="html" v-pre>&lt;date-picker
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import {ref} from 'vue'
 
 export default {
   setup() {
@@ -47,8 +47,8 @@ export default {
     return {
       dates,
       output,
-      codeOutput
+      codeOutput,
     }
-  }
+  },
 }
 </script>

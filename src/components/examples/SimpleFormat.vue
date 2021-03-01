@@ -6,7 +6,7 @@
         format="jYYYY jMMMM jDD"
         @input="codeOutput"
       />
-      <code class="code" v-if="output">{{ output.value[0] }}</code>
+      <code v-if="output" class="code">{{ output.value[0] }}</code>
       <template v-slot:code>
         <!-- eslint-disable -->
         <pre v-highlightjs><code class="html">&lt;date-picker
@@ -56,8 +56,8 @@ example:
           class="form-control mb-2"
         />
         <date-picker
-          type="date"
           v-model="state.user.birthday"
+          type="date"
           format="dddd jDD jMMMM jYYYY"
           display-format="dddd jDD jMMMM jYYYY"
           placeholder="Birthday"
@@ -102,7 +102,7 @@ example:
 
 <script>
 import moment from 'moment-jalaali'
-import { onUpdated, ref } from "vue";
+import {ref} from 'vue'
 
 export default {
   setup() {
@@ -112,8 +112,8 @@ export default {
       user: {
         name: '',
         tel: '',
-        birthday: ''
-      }
+        birthday: '',
+      },
     }
 
     const output = ref(null)
@@ -124,8 +124,8 @@ export default {
     return {
       state,
       output,
-      codeOutput
+      codeOutput,
     }
-  }
+  },
 }
 </script>

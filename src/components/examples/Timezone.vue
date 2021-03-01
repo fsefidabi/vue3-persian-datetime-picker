@@ -40,10 +40,8 @@ import moment from 'moment-jalaali'
 export default {
   data() {
     return {
-      datetime: moment()
-        .utc()
-        .format('YYYY-MM-DD HH:mm')
+      datetime: moment().utc().format('YYYY-MM-DD HH:mm'),
     }
-  }
+  },
 }
 </script>

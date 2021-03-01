@@ -13,7 +13,7 @@
         @input="codeOutput"
       />
       <br />
-      <code class="code" v-if="output">{{ output.value }}</code>
+      <code v-if="output" class="code">{{ output.value }}</code>
       <template v-slot:code>
         <!-- eslint-disable -->
         <pre v-highlightjs><code class="html" v-pre>&lt;date-picker
@@ -45,7 +45,7 @@
         @input="codeOutput"
       />
       <br />
-      <code class="code" v-if="output2">{{ output2.value }}</code>
+      <code v-if="output2" class="code">{{ output2.value }}</code>
       <template v-slot:code>
         <!-- eslint-disable -->
         <pre v-highlightjs><code class="html" v-pre>&lt;date-picker
@@ -66,12 +66,11 @@
         <!-- eslint-enable -->
       </template>
     </card>
-
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import {ref} from 'vue'
 
 export default {
   setup() {
@@ -86,8 +85,8 @@ export default {
       dates,
       output,
       output2,
-      codeOutput
+      codeOutput,
     }
-  }
+  },
 }
 </script>

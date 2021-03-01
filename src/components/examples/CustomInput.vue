@@ -6,7 +6,7 @@
       type="text"
       class="form-control form-control-lg"
       placeholder="select date"
-      style="max-width:250px"
+      style="max-width: 250px"
     />
     <date-picker
       model-value="date"
@@ -46,14 +46,14 @@
 </template>
 
 <script>
-  import { ref } from 'vue'
+import {ref} from 'vue'
 export default {
   setup() {
     const date = ref(null)
 
     return {
-      date
+      date,
     }
-  }
+  },
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div id="header" class="main-header">
-<!--    <v-icon name="menu" @click.native="$emit('toggleSidebar')" />-->
+    <!--    <v-icon name="menu" @click.native="$emit('toggleSidebar')" />-->
     <h1><strong>VUE 3</strong> PERSIAN DATE TIME PICKER</h1>
 
     <a href="https://github.com/talkhabi/vue-persian-datetime-picker">
@@ -9,7 +9,14 @@
         height="50"
         viewBox="0 0 250 250"
         aria-hidden="true"
-        style="fill: #35495e; color: rgb(255, 255, 255); position: absolute; border: 0; top: 0; right: 0"
+        style="
+          fill: #35495e;
+          color: rgb(255, 255, 255);
+          position: absolute;
+          border: 0;
+          top: 0;
+          right: 0;
+        "
       >
         <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z" />
         <path

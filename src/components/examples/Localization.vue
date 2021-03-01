@@ -10,12 +10,12 @@
         :locale-config="{
           fa: {
             displayFormat: 'jYYYY/jMM/jDD',
-            lang: { label: 'شمسی' }
+            lang: {label: 'شمسی'},
           },
           en: {
             displayFormat: 'YYYY/MM/DD',
-            lang: { label: 'Gregorian' }
-          }
+            lang: {label: 'Gregorian'},
+          },
         }"
       />
 
@@ -197,7 +197,7 @@ import zh from 'moment/locale/zh-cn'
 
 moment.updateLocale('fr', fr)
 moment.updateLocale('zh-cn', zh)
-moment.updateLocale('ar-sa', { ...ar, postformat: str => str })
+moment.updateLocale('ar-sa', {...ar, postformat: (str) => str})
 
 export default {
   data() {
@@ -205,12 +205,12 @@ export default {
       localeConfig: {
         fa: {
           displayFormat: 'jYYYY/jMM/jDD',
-          lang: { label: 'FA' }
+          lang: {label: 'FA'},
         },
         'ar-sa': {
           dow: 0,
           dir: 'rtl',
-          displayFormat: vm => {
+          displayFormat: (vm) => {
             // vm.type = date | time | datetime | year | month | yearmonth
             switch (vm.type) {
               case 'date':
@@ -233,13 +233,13 @@ export default {
             cancel: 'إلغاء',
             now: 'الآن',
             nextMonth: 'الشهر القادم',
-            prevMonth: 'الشهر الماضي'
-          }
+            prevMonth: 'الشهر الماضي',
+          },
         },
         fr: {
           dow: 0,
           dir: 'ltr',
-          displayFormat: vm => {
+          displayFormat: (vm) => {
             return vm.type === 'datetime' ? 'YYYY/MM/DD HH:mm' : 'YYYY/MM/DD'
           },
           lang: {
@@ -248,13 +248,13 @@ export default {
             cancel: 'Annuler',
             now: 'Maintenant',
             nextMonth: 'le mois prochain',
-            prevMonth: 'le mois précédent'
-          }
+            prevMonth: 'le mois précédent',
+          },
         },
         'zh-cn': {
           dow: 0,
           dir: 'ltr',
-          displayFormat: vm => {
+          displayFormat: (vm) => {
             return vm.type === 'datetime' ? 'YYYY/MM/DD HH:mm' : 'YYYY/MM/DD'
           },
           lang: {
@@ -263,11 +263,11 @@ export default {
             cancel: '取消',
             now: '現在',
             nextMonth: '下個月',
-            prevMonth: '上個月'
-          }
-        }
-      }
+            prevMonth: '上個月',
+          },
+        },
+      },
     }
-  }
+  },
 }
 </script>

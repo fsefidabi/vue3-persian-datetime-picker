@@ -37,8 +37,8 @@ export default {
   data() {
     return {
       start: '',
-      end: ''
+      end: '',
     }
-  }
+  },
 }
 </script>

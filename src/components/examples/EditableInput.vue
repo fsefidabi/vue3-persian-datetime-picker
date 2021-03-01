@@ -7,7 +7,7 @@
       :editable="true"
       @input="codeOutput"
     />
-    <code class="code" v-if="output">{{ output.value[0] }}</code>
+    <code v-if="output" class="code">{{ output.value[0] }}</code>
     <template v-slot:code>
       <!-- eslint-disable -->
       <pre v-highlightjs><code class="css" v-pre>input.is-editable {
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import {ref} from 'vue'
 export default {
   setup() {
     const date = ref(null)
@@ -38,8 +38,8 @@ export default {
     return {
       date,
       output,
-      codeOutput
+      codeOutput,
     }
-  }
+  },
 }
 </script>
