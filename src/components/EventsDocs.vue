@@ -125,7 +125,7 @@ export default {
     return {
       date: '',
       date_1: '1396/05/03',
-      dateMoment: moment('1396/05/03', 'jYYYY/jMM/jDD'),
+      dateMoment: moment('1396/05/03', 'jYYYY/jMM/jDD')
     }
   },
   methods: {
@@ -136,7 +136,7 @@ export default {
     onClose() {
       // eslint-disable-next-line
       console.log('The datepicker was closed')
-    },
-  },
+    }
+  }
 }
 </script>

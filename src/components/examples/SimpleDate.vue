@@ -110,12 +110,12 @@ export default {
       yearMonth: '',
       datetime: '',
       year: '',
-      month: '',
+      month: ''
     }
 
     return {
-      state,
+      state
     }
-  },
+  }
 }
 </script>

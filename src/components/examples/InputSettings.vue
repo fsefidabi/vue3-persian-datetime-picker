@@ -91,8 +91,8 @@
 export default {
   data() {
     return {
-      date: '',
+      date: ''
     }
-  },
+  }
 }
 </script>

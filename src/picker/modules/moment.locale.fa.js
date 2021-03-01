@@ -10,7 +10,7 @@ var symbolMap = {
     7: '۷',
     8: '۸',
     9: '۹',
-    0: '۰',
+    0: '۰'
   },
   numberMap = {
     '۱': '1',
@@ -22,7 +22,7 @@ var symbolMap = {
     '۷': '7',
     '۸': '8',
     '۹': '9',
-    '۰': '0',
+    '۰': '0'
   }
 
 export default {
@@ -46,7 +46,7 @@ export default {
     L: 'DD/MM/YYYY',
     LL: 'D MMMM YYYY',
     LLL: 'D MMMM YYYY HH:mm',
-    LLLL: 'dddd, D MMMM YYYY HH:mm',
+    LLLL: 'dddd, D MMMM YYYY HH:mm'
   },
   meridiemParse: /قبل از ظهر|بعد از ظهر/,
   isPM: function (input) {
@@ -65,7 +65,7 @@ export default {
     nextWeek: 'dddd [ساعت] LT',
     lastDay: '[دیروز ساعت] LT',
     lastWeek: 'dddd [پیش] [ساعت] LT',
-    sameElse: 'L',
+    sameElse: 'L'
   },
   relativeTime: {
     future: 'در %s',
@@ -81,7 +81,7 @@ export default {
     M: 'یک ماه',
     MM: '%d ماه',
     y: 'یک سال',
-    yy: '%d سال',
+    yy: '%d سال'
   },
   preparse: function (string) {
     return string
@@ -101,6 +101,6 @@ export default {
   ordinal: '%dم',
   week: {
     dow: 6, // Saturday is the first day of the week.
-    doy: 12, // The week that contains Jan 1st is the first week of the year.
-  },
+    doy: 12 // The week that contains Jan 1st is the first week of the year.
+  }
 }

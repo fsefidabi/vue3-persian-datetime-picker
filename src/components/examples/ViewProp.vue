@@ -49,8 +49,8 @@ export default {
     return {
       date,
       output,
-      codeOutput,
+      codeOutput
     }
-  },
+  }
 }
 </script>

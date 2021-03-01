@@ -112,8 +112,8 @@ export default {
       user: {
         name: '',
         tel: '',
-        birthday: '',
-      },
+        birthday: ''
+      }
     }
 
     const output = ref(null)
@@ -124,8 +124,8 @@ export default {
     return {
       state,
       output,
-      codeOutput,
+      codeOutput
     }
-  },
+  }
 }
 </script>

@@ -18,8 +18,8 @@ export default {
   props: {
     fill: {
       type: String,
-      default: '#f9f9f9',
-    },
-  },
+      default: '#f9f9f9'
+    }
+  }
 }
 </script>

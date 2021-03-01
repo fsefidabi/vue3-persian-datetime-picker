@@ -76,8 +76,8 @@
             'vpd-is-inline': inline,
             'vpd-is-multiple': multiple,
             'vpd-compact-time': compactTime,
-            'vpd-no-footer': autoSubmit && !hasStep('t'),
-          },
+            'vpd-no-footer': autoSubmit && !hasStep('t')
+          }
         ]"
         :data-type="type"
         @click.self="wrapperClick"
@@ -209,8 +209,8 @@
                                 'vpd-range-last': day.isLast,
                                 'vpd-range-between': day.isBetween,
                                 'vpd-range-hover':
-                                  state.hoveredItem && day.isHover,
-                              },
+                                  state.hoveredItem && day.isHover
+                              }
                               // day.attributes.class
                             ]"
                             v-bind="day.attributes"
@@ -247,7 +247,7 @@
                   ref="year"
                   :class="[
                     'vpd-addon-list',
-                    {'vpd-can-close': state.steps.length > 1},
+                    {'vpd-can-close': state.steps.length > 1}
                   ]"
                 >
                   <div class="vpd-addon-list-content">
@@ -258,11 +258,11 @@
                       :class="[
                         'vpd-addon-list-item',
                         {'vpd-selected': year.selected},
-                        year.attributes.class,
+                        year.attributes.class
                       ]"
                       :style="[
                         {color: year.selected ? color : ''},
-                        year.attributes.style,
+                        year.attributes.style
                       ]"
                       :disabled="year.disabled"
                       @click="selectYear(year)"
@@ -282,7 +282,7 @@
                   ref="monthEl"
                   :class="[
                     'vpd-addon-list vpd-month-list',
-                    {'vpd-can-close': state.steps.length > 1},
+                    {'vpd-can-close': state.steps.length > 1}
                   ]"
                 >
                   <div class="vpd-addon-list-content">
@@ -293,12 +293,12 @@
                       :class="[
                         'vpd-addon-list-item',
                         {'vpd-selected': monthItem.selected},
-                        monthItem.attributes.class,
+                        monthItem.attributes.class
                       ]"
                       :disabled="monthItem.disabled"
                       :style="[
                         {color: monthItem.selected ? color : ''},
-                        monthItem.attributes.style,
+                        monthItem.attributes.style
                       ]"
                       @click="selectMonth(monthItem)"
                     >
@@ -317,7 +317,7 @@
                   ref="time"
                   :class="[
                     'vpd-addon-list vpd-time',
-                    {'vpd-disabled': isDisableTime},
+                    {'vpd-disabled': isDisableTime}
                   ]"
                 >
                   <div class="vpd-addon-list-content">
@@ -347,7 +347,7 @@
                                 transition:
                                   'all ' +
                                   state.timeData.transitionSpeed +
-                                  'ms ease-in-out',
+                                  'ms ease-in-out'
                               }"
                               v-text="convertToLocaleNumber(item)"
                             />
@@ -388,7 +388,7 @@
                                 transition:
                                   'all ' +
                                   state.timeData.transitionSpeed +
-                                  'ms ease-in-out',
+                                  'ms ease-in-out'
                               }"
                               v-text="convertToLocaleNumber(item)"
                             />
@@ -465,16 +465,7 @@
 </template>
 
 <script>
-import {
-  ref,
-  reactive,
-  computed,
-  watch,
-  watchEffect,
-  onMounted,
-  onBeforeUnmount,
-  nextTick,
-} from 'vue'
+import {ref, reactive, computed, watch, watchEffect, onMounted, onBeforeUnmount, nextTick} from 'vue'
 import _ from 'lodash'
 import CoreModule from './modules/core'
 import {cloneDates, isSameDay} from './modules/utils'
@@ -493,14 +484,14 @@ export default {
     'close',
     'localeChange',
     'change',
-    'input',
+    'input'
   ],
   install: (app, options) => {
     let component = this
     options = app.util.extend(
       {
         name: 'data-picker',
-        props: {},
+        props: {}
       },
       options
     )
@@ -872,7 +863,7 @@ export default {
      * @example <date-picker popover="top-left" />
      * @version 2.6.0
      */
-    popover: {type: [Boolean, String], default: false},
+    popover: {type: [Boolean, String], default: false}
   },
   setup(props, {emit}) {
     const defaultLocale = props.locale.split(',')[0]
@@ -901,13 +892,13 @@ export default {
         year: 'y',
         month: 'm',
         day: 'd',
-        time: 't',
+        time: 't'
       },
       time: {},
       timeData: {
         transitionSpeed: 300,
         timeout: false,
-        lastUpdate: new Date().getTime(),
+        lastUpdate: new Date().getTime()
       },
       minDate: false,
       maxDate: false,
@@ -916,7 +907,7 @@ export default {
       locales: ['fa'],
       localeData: coreModule.locale,
       windowWidth: window.innerWidth,
-      popoverPlace: 'bottom-right',
+      popoverPlace: 'bottom-right'
     })
     const nextStep = function () {
       let step = state.step + 1
@@ -979,7 +970,7 @@ export default {
       date.set({
         hour: state.time.hour(),
         minute: state.time.minute(),
-        second: 0,
+        second: 0
       })
       state.date = date.clone()
       state.time = date.clone()
@@ -1202,7 +1193,7 @@ export default {
               a = now.clone().set({
                 h: a.hour(),
                 m: a.minute(),
-                s: 0,
+                s: 0
               })
               b = a.clone()
             }
@@ -1413,7 +1404,7 @@ export default {
         'left-top',
         'left-bottom',
         'right-top',
-        'right-bottom',
+        'right-bottom'
       ]
       if (allowed.indexOf(props.popover) !== -1)
         return (state.popoverPlace = props.popover)
@@ -1452,7 +1443,6 @@ export default {
       return state.selectedDates.map((d) => d.xFormat(format)).join(separator)
     })
     const month = computed(() => {
-      let moment = state.core.moment
       if (!hasStep('d')) return []
       let min = state.minDate ? state.minDate.clone().startOf('day') : -Infinity
       let max = state.maxDate ? state.maxDate.clone().endOf('day') : Infinity
@@ -1463,7 +1453,7 @@ export default {
             formatted: '',
             selected: false,
             disabled: false,
-            attributes: {},
+            attributes: {}
           }
           if (!day) return data
           let dayMoment = state.core.moment(day)
@@ -1927,8 +1917,8 @@ export default {
       weekDays,
       lang,
       isPopover,
-      isDataArray,
+      isDataArray
     }
-  },
+  }
 }
 </script>

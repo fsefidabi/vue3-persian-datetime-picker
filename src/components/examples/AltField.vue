@@ -38,8 +38,8 @@ export default {
     const date = ''
 
     return {
-      date,
+      date
     }
-  },
+  }
 }
 </script>

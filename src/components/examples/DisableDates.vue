@@ -312,9 +312,9 @@ export default {
         m: 'Month',
         d: 'Date',
         t: 'Time',
-        dt: 'DateTime',
+        dt: 'DateTime'
       },
-      disabled: true,
+      disabled: true
     }
   },
   methods: {
@@ -324,7 +324,7 @@ export default {
         dateMoment.jMonth() === 4 || // means "mordad"
         dateMoment.locale('en').format('dddd') === 'Friday'
       )
-    },
-  },
+    }
+  }
 }
 </script>

@@ -30,286 +30,180 @@ import PropsDocs from './components/PropsDocs.vue'
 import EventsDocs from './components/EventsDocs.vue'
 import Slots from './components/Slots.vue'
 
+const cmp = (component) => ({
+  default: component,
+  header: Header,
+  sidebar: Sidebar
+})
+
 const routes = [
   {
     path: '/',
     name: 'home',
     meta: {pageTitle: 'Home'},
-    components: {
-      default: SimpleDate,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(SimpleDate)
   },
   {
     path: '/installation',
     name: 'installation',
     meta: {pageTitle: 'Installation'},
-    components: {
-      default: InstallDocs,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(InstallDocs)
   },
   {
     path: '/formatting',
     name: 'formatting',
     meta: {pageTitle: 'Formatting'},
-    components: {
-      default: SimpleFormat,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(SimpleFormat)
   },
   {
     path: '/min-max',
     name: 'min-max',
     meta: {pageTitle: 'Min and Max'},
-    components: {
-      default: MinAndMax,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(MinAndMax)
   },
   {
     path: '/initial-value',
     name: 'initial-value',
     meta: {pageTitle: 'Initial value'},
-    components: {
-      default: WithValue,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(WithValue)
   },
   {
     path: '/different-input-output',
     name: 'different-input-output',
     meta: {pageTitle: 'Different input-output'},
-    components: {
-      default: DifferentInputAnOutput,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(DifferentInputAnOutput)
   },
   {
     path: '/view',
     name: 'view',
     meta: {pageTitle: 'View at startup'},
-    components: {
-      default: ViewProp,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(ViewProp)
   },
   {
     path: '/range',
     name: 'range',
     meta: {pageTitle: 'Range Select'},
-    components: {
-      default: Range,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(Range)
   },
   {
     path: '/multiple',
     name: 'multiple',
     meta: {pageTitle: 'Multiple Select'},
-    components: {
-      default: Multiple,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(Multiple)
   },
   {
     path: '/editable',
     name: 'editable',
     meta: {pageTitle: 'Editable'},
-    components: {
-      default: EditableInput,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(EditableInput)
   },
   {
     path: '/custom-input',
     name: 'custom-input',
     meta: {pageTitle: 'Custom input'},
-    components: {
-      default: CustomInput,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(CustomInput)
   },
   {
     path: '/custom-editable-input',
     name: 'custom-editable-input',
     meta: {pageTitle: 'Custom editable input'},
-    components: {
-      default: CustomInputAndEditable,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(CustomInputAndEditable)
   },
   {
     path: '/input-settings',
     name: 'input-settings',
     meta: {pageTitle: 'Input settings'},
-    components: {
-      default: InputSettings,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(InputSettings)
   },
   {
     path: '/alt-field',
     name: 'alt-field',
     meta: {pageTitle: 'Alt field'},
-    components: {
-      default: AltField,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(AltField)
   },
   {
     path: '/auto-submit',
     name: 'auto-submit',
     meta: {pageTitle: 'Auto submit'},
-    components: {
-      default: AutoSubmit,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(AutoSubmit)
   },
   {
     path: '/theme',
     name: 'theme',
     meta: {pageTitle: 'Theme'},
-    components: {
-      default: PickerColor,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(PickerColor)
   },
   {
     path: '/append-to',
     name: 'append-to',
     meta: {pageTitle: 'Append to container'},
-    components: {
-      default: AppendTo,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(AppendTo)
   },
   {
     path: '/disabling',
     name: 'disabling',
     meta: {pageTitle: 'Disabling'},
-    components: {
-      default: DisableDates,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(DisableDates)
   },
   {
     path: '/label',
     name: 'label',
     meta: {pageTitle: 'Picker label'},
-    components: {
-      default: WithLabel,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(WithLabel)
   },
   {
     path: '/highlight',
     name: 'highlight',
     meta: {pageTitle: 'Highlighting'},
-    components: {
-      default: Highlight,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(Highlight)
   },
   {
     path: '/locale',
     name: 'locale',
     meta: {pageTitle: 'Localization'},
-    components: {
-      default: Localization,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(Localization)
   },
   {
     path: '/timezone',
     name: 'timezone',
     meta: {pageTitle: 'Timezone'},
-    components: {
-      default: Timezone,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(Timezone)
   },
   {
     path: '/datetime-picker',
     name: 'datetime-picker',
     meta: {pageTitle: 'Datetime picker'},
-    components: {
-      default: SimpleDatetime,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(SimpleDatetime)
   },
   {
     path: '/time-picker',
     name: 'time-picker',
     meta: {pageTitle: 'Time picker'},
-    components: {
-      default: SimpleTime,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(SimpleTime)
   },
   {
     path: '/popover',
     name: 'popover',
     meta: {pageTitle: 'Popover'},
-    components: {
-      default: Popover,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(Popover)
   },
   {
     path: '/slots',
     name: 'slots',
     meta: {pageTitle: 'Slots'},
-    components: {
-      default: Slots,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(Slots)
   },
   {
     path: '/events',
     name: 'events',
     meta: {pageTitle: 'Events'},
-    components: {
-      default: EventsDocs,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(EventsDocs)
   },
   {
     path: '/props',
     name: 'props',
     meta: {pageTitle: 'Props'},
-    components: {
-      default: PropsDocs,
-      header: Header,
-      sidebar: Sidebar,
-    },
+    components: cmp(PropsDocs)
   },
   {
     path: '/:pathMatch(.*)*',
@@ -318,14 +212,14 @@ const routes = [
     components: {
       default: SimpleDate,
       header: Header,
-      sidebar: Sidebar,
-    },
-  },
+      sidebar: Sidebar
+    }
+  }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
-  routes: routes,
+  routes: routes
 })
 router.beforeEach((to, from, next) => {
   if (to.meta && to.meta.pageTitle) {

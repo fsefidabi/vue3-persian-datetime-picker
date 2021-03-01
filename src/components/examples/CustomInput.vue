@@ -52,8 +52,8 @@ export default {
     const date = ref(null)
 
     return {
-      date,
+      date
     }
-  },
+  }
 }
 </script>

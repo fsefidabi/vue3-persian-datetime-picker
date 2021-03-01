@@ -6,7 +6,7 @@ import fa from './moment.locale.fa'
 import utils from './utils'
 
 moment.updateLocale('en', {
-  weekdaysMin: 'S_M_T_W_T_F_S'.split('_'),
+  weekdaysMin: 'S_M_T_W_T_F_S'.split('_')
 })
 moment.updateLocale('fa', fa)
 moment.loadPersian({dialect: 'persian-modern'})
@@ -23,15 +23,15 @@ const localMethods = {
     year: 'jYear',
     month: 'jMonth',
     date: 'jDate',
-    day: 'day',
+    day: 'day'
   },
   en: {
     daysInMonth: 'daysInMonth',
     year: 'year',
     month: 'month',
     date: 'date',
-    day: 'day',
-  },
+    day: 'day'
+  }
 }
 const localesConfig = {
   fa: {
@@ -44,8 +44,8 @@ const localesConfig = {
       cancel: 'انصراف',
       now: 'اکنون',
       nextMonth: 'ماه بعد',
-      prevMonth: 'ماه قبل',
-    },
+      prevMonth: 'ماه قبل'
+    }
   },
   en: {
     dow: 0,
@@ -57,9 +57,9 @@ const localesConfig = {
       cancel: 'Cancel',
       now: 'Now',
       nextMonth: 'Next month',
-      prevMonth: 'Previous month',
-    },
-  },
+      prevMonth: 'Previous month'
+    }
+  }
 }
 
 const CoreModule = function (defaultLocaleName, defaultOptions) {
@@ -73,7 +73,7 @@ const CoreModule = function (defaultLocaleName, defaultOptions) {
     changeLocale: null,
     getWeekArray: null,
     getYearsList: null,
-    getMonthsList: null,
+    getMonthsList: null
   }
 
   //=====================================

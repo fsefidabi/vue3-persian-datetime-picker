@@ -13,7 +13,7 @@ export default {
   props: {
     locales: {type: Array, default: () => []},
     core: {type: Object, default: () => ({})},
-    localeData: {type: Object, default: () => ({})},
+    localeData: {type: Object, default: () => ({})}
   },
   setup(props) {
     const activeItem = computed(() => {
@@ -32,8 +32,8 @@ export default {
 
     return {
       activeItem,
-      label,
+      label
     }
-  },
+  }
 }
 </script>

@@ -36,7 +36,7 @@ const tools = {
     for (key in obj);
 
     return key === undefined || hasOwnProperty.call(obj, key)
-  },
+  }
 }
 
 /*

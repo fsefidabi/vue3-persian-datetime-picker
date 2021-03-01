@@ -85,8 +85,8 @@ export default {
       dates,
       output,
       output2,
-      codeOutput,
+      codeOutput
     }
-  },
+  }
 }
 </script>

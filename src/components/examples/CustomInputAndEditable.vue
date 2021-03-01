@@ -69,8 +69,8 @@ export default {
   data() {
     return {
       date: '',
-      show: false,
+      show: false
     }
-  },
+  }
 }
 </script>

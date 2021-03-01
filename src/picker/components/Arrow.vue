@@ -20,7 +20,7 @@
 export default {
   props: {
     fill: {type: String, default: '#a2a2a2'},
-    direction: {type: String, default: 'up'},
+    direction: {type: String, default: 'up'}
   },
   computed: {
     rotation() {
@@ -28,9 +28,9 @@ export default {
         up: 90,
         left: 0,
         right: 180,
-        down: -90,
+        down: -90
       }[this.direction]
-    },
-  },
+    }
+  }
 }
 </script>

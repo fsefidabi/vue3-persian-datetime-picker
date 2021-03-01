@@ -29,8 +29,8 @@ export default {
     )
 
     return {
-      sidebarOpen,
+      sidebarOpen
     }
-  },
+  }
 }
 </script>

@@ -10,12 +10,12 @@
         :locale-config="{
           fa: {
             displayFormat: 'jYYYY/jMM/jDD',
-            lang: {label: 'شمسی'},
+            lang: {label: 'شمسی'}
           },
           en: {
             displayFormat: 'YYYY/MM/DD',
-            lang: {label: 'Gregorian'},
-          },
+            lang: {label: 'Gregorian'}
+          }
         }"
       />
 
@@ -205,7 +205,7 @@ export default {
       localeConfig: {
         fa: {
           displayFormat: 'jYYYY/jMM/jDD',
-          lang: {label: 'FA'},
+          lang: {label: 'FA'}
         },
         'ar-sa': {
           dow: 0,
@@ -233,8 +233,8 @@ export default {
             cancel: 'إلغاء',
             now: 'الآن',
             nextMonth: 'الشهر القادم',
-            prevMonth: 'الشهر الماضي',
-          },
+            prevMonth: 'الشهر الماضي'
+          }
         },
         fr: {
           dow: 0,
@@ -248,8 +248,8 @@ export default {
             cancel: 'Annuler',
             now: 'Maintenant',
             nextMonth: 'le mois prochain',
-            prevMonth: 'le mois précédent',
-          },
+            prevMonth: 'le mois précédent'
+          }
         },
         'zh-cn': {
           dow: 0,
@@ -263,11 +263,11 @@ export default {
             cancel: '取消',
             now: '現在',
             nextMonth: '下個月',
-            prevMonth: '上個月',
-          },
-        },
-      },
+            prevMonth: '上個月'
+          }
+        }
+      }
     }
-  },
+  }
 }
 </script>

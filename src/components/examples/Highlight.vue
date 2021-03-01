@@ -179,8 +179,8 @@ export default {
         m: 'Month',
         d: 'Date',
         t: 'Time',
-        dt: 'DateTime',
-      },
+        dt: 'DateTime'
+      }
     }
   },
   methods: {
@@ -201,7 +201,7 @@ export default {
         return {
           style: {color: 'red !important'},
           class: 'highlighted',
-          'data-info': '1396',
+          'data-info': '1396'
         }
       return {}
     },
@@ -209,14 +209,14 @@ export default {
       if (formatted === '05')
         return {
           style: {color: 'red !important'},
-          class: 'highlighted',
+          class: 'highlighted'
         }
       return {}
     },
     highlightTime(formatted, dateMoment) {
       if (dateMoment.hour() === dateMoment.minutes())
         return {
-          style: {color: '#00BCD4 !important'},
+          style: {color: '#00BCD4 !important'}
         }
       return {}
     },
@@ -226,8 +226,8 @@ export default {
       else if (checkingFor === 'day' && dateMoment.jDate() === 5)
         return {class: 'highlighted-1'}
       return {}
-    },
-  },
+    }
+  }
 }
 </script>
 <style lang="scss">

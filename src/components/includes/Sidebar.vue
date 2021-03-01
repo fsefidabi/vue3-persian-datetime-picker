@@ -11,7 +11,7 @@
           <li
             :class="{
               'is-new': newItems.includes(route.name),
-              'un-completed': unCompletedItems.includes(route.name),
+              'un-completed': unCompletedItems.includes(route.name)
             }"
           >
             <a>{{ route.meta.pageTitle }}</a>
@@ -42,7 +42,7 @@ export default {
       'disabling',
       'highlight',
       'locale',
-      'events',
+      'events'
     ]
     const routesList = computed(() =>
       routes.filter((route) => route.meta.showInMenu !== false)
@@ -51,8 +51,8 @@ export default {
       activeItem,
       newItems,
       unCompletedItems,
-      routesList,
+      routesList
     }
-  },
+  }
 }
 </script>

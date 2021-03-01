@@ -8,7 +8,7 @@ export default {
     return {
       interval: false,
       timeout: false,
-      intervalDelay: 150,
+      intervalDelay: 150
     }
   },
   mounted() {
@@ -48,7 +48,7 @@ export default {
         this.intervalFn()
         if (this.intervalDelay > 30) this.intervalDelay -= 3
       }, this.intervalDelay)
-    },
-  },
+    }
+  }
 }
 </script>

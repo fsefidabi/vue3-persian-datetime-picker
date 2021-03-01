@@ -33,16 +33,16 @@ export default {
     title: {type: String, default: ''},
     version: {type: String, default: ''},
     codeColClass: {type: String, default: 'col-md-6'},
-    sampleColClass: {type: String, default: 'col-md-6'},
+    sampleColClass: {type: String, default: 'col-md-6'}
   },
   setup() {
     const state = reactive({
-      showDocs: false,
+      showDocs: false
     })
 
     return {
-      state,
+      state
     }
-  },
+  }
 }
 </script>
